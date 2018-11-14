@@ -15,14 +15,12 @@ export default {
     HelloWorld
   },
   mounted() {
-    console.log('hello');
+    console.log(process.env.VUE_APP_SRC);
   }
 };
 </script>
-
 <style lang="scss">
   .home {
-    background: $color url($image_src + '/2_161641_2.jpg');
+    background: url($src + '/images/500.png');
   }
 </style>
-
