@@ -8,13 +8,13 @@
 
 &emsp;&emsp;NODE_ENV 和 BASE_URL 是两个特殊变量，在代码中始终可用
 
-.env serve默认的环境变量
+##### .env serve默认的环境变量
 ```
 NODE_ENV = 'development'
 VUE_APP_BASE_API = 'https://demo.cn/api'
 ```
 
-.env.production build默认的环境变量
+##### .env.production build默认的环境变量
 ```
 NODE_ENV = 'production'
 
@@ -28,7 +28,7 @@ BUCKET = 'staven'
 PREFIX = 'demo'
 ```
 
-.env.analyz 用于webpack-bundle-analyzer打包分析
+##### .env.analyz 用于webpack-bundle-analyzer打包分析
 ```
 NODE_ENV = 'production'
 IS_ANALYZ = 'analyz'
@@ -102,7 +102,7 @@ module.exports = {
 }
 ```
 
-### [修复Lazy loading routes Error： Cyclic dependency](https://github.com/vuejs/vue-cli/issues/1669)
+### 修复Lazy loading routes Error： Cyclic dependency [https://github.com/vuejs/vue-cli/issues/1669](https://github.com/vuejs/vue-cli/issues/1669)
 ```$xslt
 module.exports = {
     chainWebpack: config => {
