@@ -21,6 +21,6 @@ export default {
 </script>
 <style lang="scss">
   .home {
-    background: url($src + '/images/500.png');
+    background: url('../assets/400.png');
   }
 </style>
