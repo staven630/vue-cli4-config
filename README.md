@@ -373,6 +373,7 @@ module.exports = {
 npm i --save-dev compression-webpack-plugin babel-plugin-transform-remove-console  @gfx/zopfli brotli-webpack-plugin
 ```
 * 环境配置
+
 .env
 ```
 NODE_ENV = 'development'
