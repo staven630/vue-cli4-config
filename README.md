@@ -330,7 +330,7 @@ module.exports = {
 
 ```
 
-### 配置文件上传OSS
+# 配置文件上传OSS
 ```$xslt
 npm i --save-dev webpack-oss
 ```
