@@ -68,7 +68,7 @@ module.exports = {
 };
 ```
 
-# 配置proxy跨域
+### 配置proxy跨域
 ```$xslt
 const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV);
 module.exports = {
@@ -628,4 +628,4 @@ module.exports = {
         }
     }
 };
-````
+```
