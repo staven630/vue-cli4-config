@@ -65,9 +65,6 @@ module.exports = {
                         bucket: process.env.BUCKET,
                         prefix: process.env.PREFIX,    
                         exclude: /.*\.html$/, 
-                        enableLog: true,
-                        ignoreError: false,
-                        deleteMode: false,
                         deleteAll: false
                     })
                 );

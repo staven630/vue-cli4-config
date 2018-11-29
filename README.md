@@ -15,11 +15,12 @@ VUE_APP_BASE_API = 'https://demo.cn/api'
 ```
 
 ##### .env.production build默认的环境变量
+&emsp;&emsp;如果开启ali oss,VUE_APP_SRC配置为ali oss 资源url前缀，如：'https://staven.oss-cn-hangzhou.aliyuncs.com/demo'
 ```
 NODE_ENV = 'production'
 
 VUE_APP_BASE_API = 'https://demo.com/api'
-VUE_APP_SRC = 'https://staven.oss-cn-hangzhou.aliyuncs.com/demo'
+VUE_APP_SRC = '/' 
 
 ACCESS_KEY_ID = ''
 ACCESS_KEY_SECRET = ''
@@ -29,12 +30,13 @@ PREFIX = 'demo'
 ```
 
 ##### .env.analyz 用于webpack-bundle-analyzer打包分析
+&emsp;&emsp;如果开启ali oss,VUE_APP_SRC配置为ali oss 资源url前缀，如：'https://staven.oss-cn-hangzhou.aliyuncs.com/demo'
 ```
 NODE_ENV = 'production'
 IS_ANALYZ = 'analyz'
 
 VUE_APP_BASE_API = 'https://demo.com/api'
-VUE_APP_SRC = 'https://staven.oss-cn-hangzhou.aliyuncs.com/demo'
+VUE_APP_SRC = '/'
 
 ACCESS_KEY_ID = ''
 ACCESS_KEY_SECRET = ''
@@ -330,7 +332,8 @@ module.exports = {
 
 ```
 
-# 配置文件上传OSS
+# 配置文件上传ali OSS
+&emsp;&emsp;开启文件上传ali oss，需要将baseUrl改成ali oss资源url前缀,也就是修改VUE_APP_SRC
 ```$xslt
 npm i --save-dev webpack-oss
 ```
@@ -351,9 +354,6 @@ module.exports = {
                         bucket: process.env.BUCKET,
                         prefix: process.env.PREFIX,    
                         exclude: /.*\.html$/, 
-                        enableLog: true,
-                        ignoreError: false,
-                        deleteMode: false,
                         deleteAll: false
                     })
                 );
@@ -381,11 +381,13 @@ VUE_APP_BASE_API = 'https://demo.cn/api'
 ```
 
 .env.production
+
+&emsp;&emsp;如果开启ali oss,VUE_APP_SRC配置为ali oss 资源url前缀，如：'https://staven.oss-cn-hangzhou.aliyuncs.com/demo'
 ```
 NODE_ENV = 'production'
 
 VUE_APP_BASE_API = 'https://demo.com/api'
-VUE_APP_SRC = 'https://staven.oss-cn-hangzhou.aliyuncs.com/demo'
+VUE_APP_SRC = '/'
 
 ACCESS_KEY_ID = ''
 ACCESS_KEY_SECRET = ''
@@ -395,12 +397,14 @@ PREFIX = 'demo'
 ```
 
 .env.analyz
+
+&emsp;&emsp;如果开启ali oss,VUE_APP_SRC配置为ali oss 资源url前缀，如：'https://staven.oss-cn-hangzhou.aliyuncs.com/demo'
 ```
 NODE_ENV = 'production'
 IS_ANALYZ = 'analyz'
 
 VUE_APP_BASE_API = 'https://demo.com/api'
-VUE_APP_SRC = 'https://staven.oss-cn-hangzhou.aliyuncs.com/demo'
+VUE_APP_SRC = VUE_APP_SRC = '/'
 
 ACCESS_KEY_ID = ''
 ACCESS_KEY_SECRET = ''
