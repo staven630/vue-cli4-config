@@ -56,19 +56,19 @@ module.exports = {
             );
             
             // 上传文件到oss
-            if (process.env.ACCESS_KEY_ID || process.env.ACCESS_KEY_SECRET || process.env.REGION || process.env.BUCKET || process.env.PREFIX) {
-                plugins.push(
-                    new AliOssPlugin({
-                        accessKeyId: process.env.ACCESS_KEY_ID,
-                        accessKeySecret: process.env.ACCESS_KEY_SECRET,
-                        region: process.env.REGION, 
-                        bucket: process.env.BUCKET,
-                        prefix: process.env.PREFIX,    
-                        exclude: /.*\.html$/, 
-                        deleteAll: false
-                    })
-                );
-            }
+            //if (process.env.ACCESS_KEY_ID || process.env.ACCESS_KEY_SECRET || process.env.REGION || process.env.BUCKET || process.env.PREFIX) {
+            //    plugins.push(
+            //        new AliOssPlugin({
+            //            accessKeyId: process.env.ACCESS_KEY_ID,
+            //            accessKeySecret: process.env.ACCESS_KEY_SECRET,
+            //            region: process.env.REGION, 
+            //            bucket: process.env.BUCKET,
+            //            prefix: process.env.PREFIX,    
+            //            exclude: /.*\.html$/, 
+            //            deleteAll: false
+            //        })
+            //    );
+            //}
 
             // Zopfli压缩，需要响应VC库 https://webpack.js.org/plugins/compression-webpack-plugin/
             // plugins.push(
