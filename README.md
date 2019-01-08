@@ -14,6 +14,7 @@
 - [√ 去掉 console.log](#log)
 - [√ 开启 gzip 压缩](#gzip)
 - [√ 为 sass 提供全局样式，以及全局变量](#globalscss)
+- [√ 为 stylus 提供全局变量](#globalstylus)
 - [√ 添加 IE 兼容](#ie)
 - [√ 文件上传 ali oss](#alioss)
 - [√ 完整依赖](#allconfig)
@@ -421,6 +422,43 @@ module.exports = {
 
 [▲ 回顶部](#top)
 
+### <span id="globalstylus">☞ 为 stylus 提供全局变量</span>
+
+```
+npm i -D style-resources-loader
+```
+
+```$xslt
+const path = require('path')
+const resolve = dir => path.resolve(__dirname, dir)
+const addStylusResource = rule => {
+  rule
+    .use('style-resouce')
+    .loader('style-resources-loader')
+    .options({
+      patterns: [resolve('src/assets/stylus/variable.styl')]
+    })
+}
+module.exports = {
+  chainWebpack: config => {
+    const types = ['vue-modules', 'vue', 'normal-modules', 'normal']
+    types.forEach(type =>
+      addStylusResource(config.module.rule('stylus').oneOf(type))
+    )
+  }
+}
+```
+
+在 scss 中引用
+
+```$xslt
+.home {
+    background: url($src + '/images/500.png');
+}
+```
+
+[▲ 回顶部](#top)
+
 ### <span id="ie">☞ 添加 IE 兼容</span>
 
 ```$xslt
@@ -492,7 +530,7 @@ module.exports = {
 - 安装依赖
 
 ```$xslt
-npm i --save-dev compression-webpack-plugin babel-plugin-transform-remove-console  glob-all purgecss-webpack-plugin
+npm i -D compression-webpack-plugin babel-plugin-transform-remove-console  glob-all purgecss-webpack-plugin style-resources-loader
 ```
 
 &emsp;&emsp;其他依赖(@gfx/zopfli、brotli-webpack-plugin、webpack-oss)根据需求选择安装
@@ -569,26 +607,36 @@ module.exports = {
 - vue.config.js
 
 ```
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
-  .BundleAnalyzerPlugin;
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const CompressionWebpackPlugin = require("compression-webpack-plugin");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
 // const zopfli = require("@gfx/zopfli");
 // const BrotliPlugin = require("brotli-webpack-plugin");
-const AliOssPlugin = require("webpack-oss");
+const AliOssPlugin = require('webpack-oss')
 
-const path = require("path");
-const PurgecssPlugin = require("purgecss-webpack-plugin");
-const glob = require("glob-all");
+const path = require('path')
+const PurgecssPlugin = require('purgecss-webpack-plugin')
+const glob = require('glob-all')
 
-const resolve = dir => path.join(__dirname, dir);
-const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
-const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i;
+const resolve = dir => path.join(__dirname, dir)
+const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
+const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i
+
+// 添加stylus规则
+// const addStylusResource = rule => {
+//   rule
+//     .use('style-resouce')
+//     .loader('style-resources-loader')
+//     .options({
+//       patterns: [resolve('src/assets/stylus/variable.styl')]
+//     })
+// }
 
 module.exports = {
-  baseUrl: IS_PROD ? process.env.VUE_APP_SRC || "/" : "./", // 默认'/'，部署应用包时的基本 URL
-  outputDir: process.env.outputDir || "dist", // 'dist', 生产环境构建文件的目录
-  assetsDir: "", // 相对于outputDir的静态资源(js、css、img、fonts)目录
+  baseUrl: IS_PROD ? process.env.VUE_APP_SRC || '/' : './', // 默认'/'，部署应用包时的基本 URL
+  outputDir: process.env.outputDir || 'dist', // 'dist', 生产环境构建文件的目录
+  assetsDir: '', // 相对于outputDir的静态资源(js、css、img、fonts)目录
   lintOnSave: false,
   runtimeCompiler: true, // 是否使用包含运行时编译器的 Vue 构建版本
   productionSourceMap: false, // 生产环境的 source map
@@ -604,17 +652,17 @@ module.exports = {
     // }
 
     if (IS_PROD) {
-      const plugins = [];
+      const plugins = []
 
       plugins.push(
         new PurgecssPlugin({
           paths: glob.sync([
-            path.join(__dirname, "./src/index.html"),
-            path.join(__dirname, "./**/*.vue"),
-            path.join(__dirname, "./src/**/*.js")
+            path.join(__dirname, './src/index.html'),
+            path.join(__dirname, './**/*.vue'),
+            path.join(__dirname, './src/**/*.js')
           ])
         })
-      );
+      )
 
       plugins.push(
         new UglifyJsPlugin({
@@ -623,22 +671,22 @@ module.exports = {
               warnings: false,
               drop_console: true,
               drop_debugger: false,
-              pure_funcs: ["console.log"] //移除console
+              pure_funcs: ['console.log'] //移除console
             }
           },
           sourceMap: false,
           parallel: true
         })
-      );
+      )
       plugins.push(
         new CompressionWebpackPlugin({
-          filename: "[path].gz[query]",
-          algorithm: "gzip",
+          filename: '[path].gz[query]',
+          algorithm: 'gzip',
           test: productionGzipExtensions,
           threshold: 10240,
           minRatio: 0.8
         })
-      );
+      )
 
       // 上传文件到oss
       //if (process.env.ACCESS_KEY_ID || process.env.ACCESS_KEY_SECRET || process.env.REGION || process.env.BUCKET || process.env.PREFIX) {
@@ -674,36 +722,42 @@ module.exports = {
       //         minRatio: 0.99
       //     })
       // );
-      config.plugins = [...config.plugins, ...plugins];
+      config.plugins = [...config.plugins, ...plugins]
     }
   },
   chainWebpack: config => {
     // 修复HMR
-    config.resolve.symlinks(true);
+    config.resolve.symlinks(true)
 
     // 修复Lazy loading routes Error： Cyclic dependency  [https://github.com/vuejs/vue-cli/issues/1669]
-    config.plugin("html").tap(args => {
-      args[0].chunksSortMode = "none";
-      return args;
-    });
+    config.plugin('html').tap(args => {
+      args[0].chunksSortMode = 'none'
+      return args
+    })
 
     // 添加别名
     config.resolve.alias
-      .set("@", resolve("src"))
-      .set("assets", resolve("src/assets"))
-      .set("components", resolve("src/components"))
-      .set("layout", resolve("src/layout"))
-      .set("base", resolve("src/base"))
-      .set("static", resolve("src/static"));
+      .set('@', resolve('src'))
+      .set('assets', resolve('src/assets'))
+      .set('components', resolve('src/components'))
+      .set('layout', resolve('src/layout'))
+      .set('base', resolve('src/base'))
+      .set('static', resolve('src/static'))
 
     // 打包分析
     if (process.env.IS_ANALYZ) {
-      config.plugin("webpack-report").use(BundleAnalyzerPlugin, [
+      config.plugin('webpack-report').use(BundleAnalyzerPlugin, [
         {
-          analyzerMode: "static"
+          analyzerMode: 'static'
         }
-      ]);
+      ])
     }
+
+    // stylus
+    // const types = ['vue-modules', 'vue', 'normal-modules', 'normal']
+    // types.forEach(type =>
+    //   addStylusResource(config.module.rule('stylus').oneOf(type))
+    // )
 
     // 多页面配置，为js添加hash
     // config.output.chunkFilename(`js/[name].[chunkhash:8].js`)
@@ -755,7 +809,7 @@ module.exports = {
     //   ]
     // }
   },
-  parallel: require("os").cpus().length > 1,
+  parallel: require('os').cpus().length > 1,
   pwa: {},
   devServer: {
     // overlay: {
@@ -763,16 +817,16 @@ module.exports = {
     //   errors: true
     // },
     open: IS_PROD,
-    host: "0.0.0.0",
+    host: '0.0.0.0',
     port: 8000,
     https: false,
     hotOnly: false,
     proxy: {
-      "/api": {
-        target: process.env.VUE_APP_BASE_API || "http://127.0.0.1:8080",
+      '/api': {
+        target: process.env.VUE_APP_BASE_API || 'http://127.0.0.1:8080',
         changeOrigin: true
       }
     }
   }
-};
+}
 ```
