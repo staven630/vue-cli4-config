@@ -449,14 +449,6 @@ module.exports = {
 }
 ```
 
-在 scss 中引用
-
-```$xslt
-.home {
-    background: url($src + '/images/500.png');
-}
-```
-
 [▲ 回顶部](#top)
 
 ### <span id="ie">☞ 添加 IE 兼容</span>
