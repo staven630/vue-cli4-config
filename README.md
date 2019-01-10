@@ -183,6 +183,47 @@ module.exports = {
 
 ### <span id="removecss">☞ 去除多余无效的 css</span>
 
+- 方案一(推荐)：@fullhuman/postcss-purgecss
+
+```
+npm i -D postcss-import @fullhuman/postcss-purgecss
+```
+
+&emsp;&emsp;更新 postcss.config.js
+
+```
+const autoprefixer = require("autoprefixer");
+const postcssImport = require("postcss-import");
+const purgecss = require("@fullhuman/postcss-purgecss");
+
+module.exports = {
+  plugins: [
+    postcssImport,
+    purgecss({
+      content: ["./src/**/*.vue"],
+      extractors: [
+        {
+          extractor: class Extractor {
+            static extract(content) {
+              const validSection = content.replace(
+                /<style([\s\S]*?)<\/style>+/gim,
+                ""
+              );
+              return validSection.match(/[A-Za-z0-9-_:/]+/g) || [];
+            }
+          },
+          extensions: ["vue"]
+        }
+      ]
+    }),
+    autoprefixer
+  ]
+};
+
+```
+
+- 方案二：purgecss-webpack-plugin
+
 ```
 npm i --save-dev glob-all purgecss-webpack-plugin
 ```
@@ -199,9 +240,7 @@ module.exports = {
             plugins.push(
                 new PurgecssPlugin({
                     paths: glob.sync([
-                    path.join(__dirname, './src/index.html'),
-                    path.join(__dirname, './**/*.vue'),
-                    path.join(__dirname, './src/**/*.js')
+                        resolve('./**/*.vue')
                     ])
                 })
             );
@@ -522,7 +561,7 @@ module.exports = {
 - 安装依赖
 
 ```$xslt
-npm i -D compression-webpack-plugin babel-plugin-transform-remove-console  glob-all purgecss-webpack-plugin style-resources-loader
+npm i -D compression-webpack-plugin babel-plugin-transform-remove-console  glob-all purgecss-webpack-plugin style-resources-loader postcss-import @fullhuman/postcss-purgecss
 ```
 
 &emsp;&emsp;其他依赖(@gfx/zopfli、brotli-webpack-plugin、webpack-oss)根据需求选择安装
@@ -593,6 +632,44 @@ const plugins = [];
 module.exports = {
   presets: [["@vue/app",{"useBuiltIns": "entry"}]],
   plugins: plugins
+};
+```
+
+- postcss.config.js
+
+```
+const autoprefixer = require("autoprefixer");
+// const postcssImport = require("postcss-import");
+// const purgecss = require("@fullhuman/postcss-purgecss");
+
+const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
+let plugins = [];
+
+if (IS_PROD) {
+  // plugins.push(postcssImport);
+  // plugins.push(
+  //   purgecss({
+  //     content: ["./src/**/*.vue"],
+  //     extractors: [
+  //       {
+  //         extractor: class Extractor {
+  //           static extract(content) {
+  //             const validSection = content.replace(
+  //               /<style([\s\S]*?)<\/style>+/gim,
+  //               ""
+  //             );
+  //             return validSection.match(/[A-Za-z0-9-_:/]+/g) || [];
+  //           }
+  //         },
+  //         extensions: ["vue"]
+  //       }
+  //     ]
+  //   })
+  // );
+}
+
+module.exports = {
+  plugins: [...plugins, autoprefixer]
 };
 ```
 
