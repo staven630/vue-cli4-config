@@ -196,9 +196,12 @@ const autoprefixer = require("autoprefixer");
 const postcssImport = require("postcss-import");
 const purgecss = require("@fullhuman/postcss-purgecss");
 
-module.exports = {
-  plugins: [
-    postcssImport,
+const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
+let plugins = [];
+
+if (IS_PROD) {
+  plugins.push(postcssImport);
+  plugins.push(
     purgecss({
       content: ["./src/**/*.vue"],
       extractors: [
@@ -215,9 +218,12 @@ module.exports = {
           extensions: ["vue"]
         }
       ]
-    }),
-    autoprefixer
-  ]
+    })
+  );
+}
+
+module.exports = {
+  plugins: [...plugins, autoprefixer]
 };
 
 ```
