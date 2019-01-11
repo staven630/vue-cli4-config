@@ -45,28 +45,27 @@ module.exports = {
     if (IS_PROD) {
       const plugins = [];
 
-      plugins.push(
-		new PurgecssPlugin({
-		  paths: glob.sync([
-		    path.join(__dirname, "./**/*.vue")
-		  ]),
-		  extractors: [
-		    {
-		      extractor: class Extractor {
-		        static extract(content) {
-		          const validSection = content.replace(
-		            /<style([\s\S]*?)<\/style>+/gim,
-		            ""
-		          );
-		          return validSection.match(/[A-Za-z0-9-_:/]+/g) || [];
-		        }
-		      },
-		      extensions: ["vue"]
-		    }
-		  ],
-		  whitelist: ["html", "body"]
-		})
-      );
+      // 去除多余css
+      // plugins.push(
+      //   new PurgecssPlugin({
+      //     paths: glob.sync([path.join(__dirname, "./**/*.vue")]),
+      //     extractors: [
+      //       {
+      //         extractor: class Extractor {
+      //           static extract(content) {
+      //             const validSection = content.replace(
+      //               /<style([\s\S]*?)<\/style>+/gim,
+      //               ""
+      //             );
+      //             return validSection.match(/[A-Za-z0-9-_:/]+/g) || [];
+      //           }
+      //         },
+      //         extensions: ["vue"]
+      //       }
+      //     ],
+      //     whitelist: ["html", "body"]
+      //   })
+      // );
 
       plugins.push(
         new UglifyJsPlugin({
@@ -156,6 +155,19 @@ module.exports = {
         }
       ]);
     }
+
+    // 压缩图片
+    // config.module
+    //   .rule("images")
+    //   .use("image-webpack-loader")
+    //   .loader("image-webpack-loader")
+    //   .options({
+    //     mozjpeg: { progressive: true, quality: 65 },
+    //     optipng: { enabled: false },
+    //     pngquant: { quality: "65-90", speed: 4 },
+    //     gifsicle: { interlaced: false },
+    //     webp: { quality: 75 }
+    //   });
 
     // stylus
     // const types = ['vue-modules', 'vue', 'normal-modules', 'normal']
