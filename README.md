@@ -1,5 +1,9 @@
 # vue-cli3 全面配置(持续更新)
 
+### 其他系列
+
+★ [Nuxt.js 全面配置](https://github.com/staven630/nuxt-config)
+
 <span id="top">目录</span>
 
 - [√ 配置多环境变量](#env)
@@ -26,7 +30,7 @@
 
 &emsp;&emsp;在项目根目录中新建.env, .env.production, .env.analyz 等文件
 
-&emsp;&emsp;只有以 VUE*APP* 开头的变量会被 webpack.DefinePlugin 静态嵌入到客户端侧的包中，代码中可以通过 process.env.VUE_APP_BASE_API 访问
+&emsp;&emsp;只有以 VUE_APP 开头的变量会被 webpack.DefinePlugin 静态嵌入到客户端侧的包中，代码中可以通过 process.env.VUE_APP_BASE_API 访问
 
 &emsp;&emsp;NODE_ENV 和 BASE_URL 是两个特殊变量，在代码中始终可用
 
