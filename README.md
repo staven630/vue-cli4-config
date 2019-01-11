@@ -182,7 +182,7 @@ module.exports = {
 
 [▲ 回顶部](#top)
 
-### <span id="compressimage">☞ 压缩图片 css</span>
+### <span id="compressimage">☞ 压缩图片</span>
 
 ```
 npm i -D image-webpack-loader
