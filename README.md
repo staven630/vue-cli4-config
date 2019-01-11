@@ -183,7 +183,7 @@ module.exports = {
 
 ### <span id="removecss">☞ 去除多余无效的 css</span>
 
-- 方案一(推荐)：@fullhuman/postcss-purgecss
+- 方案一：@fullhuman/postcss-purgecss
 
 ```
 npm i -D postcss-import @fullhuman/postcss-purgecss
@@ -235,28 +235,40 @@ npm i --save-dev glob-all purgecss-webpack-plugin
 ```
 
 ```
-const PurgecssPlugin = require('purgecss-webpack-plugin');
-const glob = require('glob-all');
-const path = require('path')
+const path = require("path");
+const glob = require("glob-all");
+const PurgecssPlugin = require("purgecss-webpack-plugin");
+const resolve = dir => path.resolve(__dirname, dir);
+const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 
 module.exports = {
-    configureWebpack: config => {
-        if (IS_PROD) {
-            const plugins = [];
-            plugins.push(
-                new PurgecssPlugin({
-                    paths: glob.sync([
-                        resolve('./**/*.vue')
-                    ])
-                })
-            );
-            config.plugins = [
-                ...config.plugins,
-                ...plugins
-            ];
-        }
+  configureWebpack: config => {
+    if (IS_PROD) {
+      const plugins = [];
+      plugins.push(
+        new PurgecssPlugin({
+          paths: glob.sync([resolve("./**/*.vue")]),
+          extractors: [
+            {
+              extractor: class Extractor {
+                static extract(content) {
+                  const validSection = content.replace(
+                    /<style([\s\S]*?)<\/style>+/gim,
+                    ""
+                  );
+                  return validSection.match(/[A-Za-z0-9-_:/]+/g) || [];
+                }
+              },
+              extensions: ["vue"]
+            }
+          ],
+          whitelist: ["html", "body"]
+        })
+      );
+      config.plugins = [...config.plugins, ...plugins];
     }
-}
+  }
+};
 ```
 
 [▲ 回顶部](#top)
