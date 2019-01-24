@@ -246,7 +246,8 @@ if (IS_PROD) {
               return validSection.match(/[A-Za-z0-9-_:/]+/g) || [];
             }
           },
-          extensions: ["vue"]
+          extensions: ["vue"],
+          whitelistPatterns: [/el-.*/]
         }
       ]
     })
@@ -293,7 +294,8 @@ module.exports = {
               extensions: ["vue"]
             }
           ],
-          whitelist: ["html", "body"]
+          whitelist: ["html", "body"],
+          whitelistPatterns: [/el-.*/]
         })
       );
       config.plugins = [...config.plugins, ...plugins];
@@ -710,7 +712,8 @@ if (IS_PROD) {
   //             return validSection.match(/[A-Za-z0-9-_:/]+/g) || [];
   //           }
   //         },
-  //         extensions: ["vue"]
+  //         extensions: ["vue"],
+  //         whitelistPatterns: [/el-.*/]
   //       }
   //     ]
   //   })
@@ -787,7 +790,8 @@ module.exports = {
       //             return validSection.match(/[A-Za-z0-9-_:/]+/g) || [];
       //           }
       //         },
-      //         extensions: ["vue"]
+      //         extensions: ["vue"],
+      //         whitelistPatterns: [/el-.*/]
       //       }
       //     ],
       //     whitelist: ["html", "body"]
