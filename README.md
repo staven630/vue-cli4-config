@@ -17,6 +17,7 @@
 - [√ 添加打包分析](#analyze)
 - [√ 配置 externals](#externals)
 - [√ 去掉 console.log](#log)
+- [√ 利用splitchunks单独打包第三方模块](#splitchunks)
 - [√ 开启 gzip 压缩](#gzip)
 - [√ 为 sass 提供全局样式，以及全局变量](#globalscss)
 - [√ 为 stylus 提供全局变量](#globalstylus)
@@ -174,12 +175,17 @@ module.exports = {
     chainWebpack: config => {
         // 添加别名
         config.resolve.alias
+          .set('vue$', 'vue/dist/vue.esm.js')
           .set('@', resolve('src'))
-          .set('assets', resolve('src/assets'))
-          .set('components', resolve('src/components'))
-          .set('layout', resolve('src/layout'))
-          .set('base', resolve('src/base'))
-          .set('static', resolve('src/static'));
+          .set('@assets', resolve('src/assets'))
+          .set('@scss', resolve('src/assets/scss'))
+          .set('@components', resolve('src/components'))
+          .set('@plugins', resolve('src/plugins'))
+          .set('@views', resolve('src/views'))
+          .set('@router', resolve('src/router'))
+          .set('@store', resolve('src/store'))
+          .set('@layouts', resolve('src/layouts'))
+          .set('@static', resolve('src/static'));
     }
 }
 ```
@@ -406,6 +412,43 @@ module.exports = {
 
 [▲ 回顶部](#top)
 
+### <span id="splitchunks">利用splitchunks单独打包第三方模块</span> 
+```
+const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
+
+module.exports = {
+  configureWebpack: config => {
+    if (IS_PROD) {
+      config.optimization = {
+        splitChunks: {
+          cacheGroups: {
+            libs: {
+              name: 'chunk-libs',
+              test: /[\\/]node_modules[\\/]/,
+              priority: 10,
+              chunks: 'initial'
+            },
+            elementUI: {
+              name: 'chunk-elementUI',
+              priority: 20,
+              test: /[\\/]node_modules[\\/]element-ui[\\/]/,
+              chunks: 'all'
+            }
+          }
+        }
+      }
+    }
+  },
+  chainWebpack: config => {
+    if (IS_PROD) {
+      config.optimization.delete('splitChunks')
+    }
+    return config
+  }
+}
+```
+
+[▲ 回顶部](#top)
 ### <span id="gzip">☞ 开启 gzip 压缩</span>
 
 ```$xslt
