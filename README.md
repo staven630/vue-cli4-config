@@ -21,6 +21,7 @@
 - [√ 开启 gzip 压缩](#gzip)
 - [√ 为 sass 提供全局样式，以及全局变量](#globalscss)
 - [√ 为 stylus 提供全局变量](#globalstylus)
+- [√ 预渲染prerender-spa-plugin](#prerender)
 - [√ 添加 IE 兼容](#ie)
 - [√ 文件上传 ali oss](#alioss)
 - [√ 完整依赖](#allconfig)
@@ -583,6 +584,74 @@ module.exports = {
     )
   }
 }
+```
+
+[▲ 回顶部](#top)
+
+### <span id="prerender">预渲染prerender-spa-plugin</span>
+```
+npm i -D prerender-spa-plugin
+```
+
+```
+const PrerenderSpaPlugin = require('prerender-spa-plugin')
+const path = require('path')
+const resolve = dir => path.join(__dirname, dir)
+const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
+
+module.exports = {
+  configureWebpack: config => {
+    const plugins = []
+    if (IS_PROD) {
+      plugins.push(
+        new PrerenderSpaPlugin({
+          staticDir: resolve('dist'),
+          routes: ['/'],
+          postProcess(renderedRoute) {
+            renderedRoute.route = renderedRoute.originalRoute
+            renderedRoute.html = renderedRoute.html
+              .split(/>[\s]+</gim)
+              .join('><')
+            if (renderedRoute.route.endsWith('.html')) {
+              renderedRoute.outputPath = path.join(
+                __dirname,
+                'dist',
+                renderedRoute.route
+              )
+            }
+            return renderedRoute
+          },
+          minify: {
+            collapseBooleanAttributes: true,
+            collapseWhitespace: true,
+            decodeEntities: true,
+            keepClosingSlash: true,
+            sortAttributes: true
+          },
+          renderer: new PrerenderSpaPlugin.PuppeteerRenderer({
+            // 需要注入一个值，这样就可以检测页面当前是否是预渲染的
+            inject: {},
+            headless: false,
+            // 视图组件是在API请求获取所有必要数据后呈现的，因此我们在dom中存在“data view”属性后创建页面快照
+            renderAfterDocumentEvent: 'render-event'
+          })
+        })
+      )
+    }
+    config.plugins = [...config.plugins, ...plugins]
+  } 
+}
+```
+&emsp;&emsp;mounted()中添加document.dispatchEvent(new Event('render-event'))
+```
+new Vue({
+  router,
+  store,
+  render: (h) => h(App),
+  mounted() {
+    document.dispatchEvent(new Event('render-event'))
+  }
+}).$mount('#app')
 ```
 
 [▲ 回顶部](#top)
