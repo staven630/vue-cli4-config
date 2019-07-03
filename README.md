@@ -97,7 +97,7 @@ PREFIX = 'demo'
 const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV);
 
 module.exports = {
-  baseUrl: './', // 默认'/'，部署应用包时的基本 URL
+  publicPath: './', // 默认'/'，部署应用包时的基本 URL
   outputDir: process.env.outputDir || 'dist', // 'dist', 生产环境构建文件的目录
   assetsDir: '',  // 相对于outputDir的静态资源(js、css、img、fonts)目录
   lintOnSave: false,
@@ -341,17 +341,35 @@ module.exports = {
 &emsp;&emsp;防止将某些 import 的包(package)打包到 bundle 中，而是在运行时(runtime)再去从外部获取这些扩展依赖
 
 ```$xslt
-
 module.exports = {
-    configureWebpack: config => {
-        config.externals = {
-          'vue': 'Vue',
-          'element-ui': 'ELEMENT',
-          'vue-router': 'VueRouter',
-          'vuex': 'Vuex',
-          'axios': 'axios'
-        }
+  configureWebpack: config => {
+    config.externals = {
+      vue: 'Vue',
+      'element-ui': 'ELEMENT',
+      'vue-router': 'VueRouter',
+      vuex: 'Vuex',
+      axios: 'axios'
     }
+  },
+  chainWebpack: config => {
+    const cdn = {
+      // 访问https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本
+      css: ['//unpkg.com/element-ui@2.10.1/lib/theme-chalk/index.css'],
+      js: [
+        '//unpkg.com/vue@2.6.10/dist/vue.min.js', // 访问https://unpkg.com/vue/dist/vue.min.js获取最新版本
+        '//unpkg.com/vue-router@3.0.6/dist/vue-router.min.js',
+        '//unpkg.com/vuex@3.1.1/dist/vuex.min.js',
+        '//unpkg.com/axios@0.19.0/dist/axios.min.js',
+        '//unpkg.com/element-ui@2.10.1/lib/index.js'
+      ] 
+    };
+
+    // html中添加cdn
+    config.plugin('html').tap(args => {
+      args[0].cdn = cdn
+      return args
+    })
+  }
 }
 ```
 
@@ -684,7 +702,7 @@ module.exports = {
 
 ### <span id="alioss">☞ 文件上传 ali oss</span>
 
-&emsp;&emsp;开启文件上传 ali oss，需要将 baseUrl 改成 ali oss 资源 url 前缀,也就是修改 VUE_APP_SRC
+&emsp;&emsp;开启文件上传 ali oss，需要将 publicPath 改成 ali oss 资源 url 前缀,也就是修改 VUE_APP_SRC
 
 ```$xslt
 npm i --save-dev webpack-oss
@@ -870,7 +888,7 @@ const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i
 // }
 
 module.exports = {
-  baseUrl: IS_PROD ? process.env.VUE_APP_SRC || '/' : './', // 默认'/'，部署应用包时的基本 URL
+  publicPath: IS_PROD ? process.env.VUE_APP_SRC || '/' : './', // 默认'/'，部署应用包时的基本 URL
   outputDir: process.env.outputDir || 'dist', // 'dist', 生产环境构建文件的目录
   assetsDir: '', // 相对于outputDir的静态资源(js、css、img、fonts)目录
   lintOnSave: false,

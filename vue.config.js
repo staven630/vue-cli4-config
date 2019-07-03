@@ -25,7 +25,7 @@ const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i
 // }
 
 module.exports = {
-  baseUrl: IS_PROD ? process.env.VUE_APP_SRC || '/' : './', // 默认'/'，部署应用包时的基本 URL
+  publicPath: IS_PROD ? process.env.VUE_APP_SRC || '/' : './', // 默认'/'，部署应用包时的基本 URL
   outputDir: process.env.outputDir || 'dist', // 'dist', 生产环境构建文件的目录
   assetsDir: '', // 相对于outputDir的静态资源(js、css、img、fonts)目录
   lintOnSave: false,
@@ -134,8 +134,25 @@ module.exports = {
     // 修复HMR
     config.resolve.symlinks(true)
 
+    const cdn = {
+      // https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本
+      css: ['//unpkg.com/element-ui@2.10.1/lib/theme-chalk/index.css'],
+      js: [
+        '//unpkg.com/vue@2.6.10/dist/vue.min.js', // https://unpkg.com/vue/dist/vue.min.js获取最新版本
+        '//unpkg.com/vue-router@3.0.6/dist/vue-router.min.js',
+        '//unpkg.com/vuex@3.1.1/dist/vuex.min.js',
+        '//unpkg.com/axios@0.19.0/dist/axios.min.js',
+        '//unpkg.com/element-ui@2.10.1/lib/index.js'
+      ]
+    }
+    config.plugin('html').tap(args => {
+      args[0].cdn = cdn
+      return args
+    })
+
     // 修复Lazy loading routes Error： Cyclic dependency  [https://github.com/vuejs/vue-cli/issues/1669]
     config.plugin('html').tap(args => {
+      // args[0].cdn = cdn
       args[0].chunksSortMode = 'none'
       return args
     })
