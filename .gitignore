@@ -2,6 +2,9 @@
 node_modules
 /dist
 
+/tests/e2e/reports/
+selenium-debug.log
+
 # local env files
 .env.local
 .env.*.local
@@ -18,4 +21,4 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-*.sw*
+*.sw?

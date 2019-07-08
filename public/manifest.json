@@ -1,6 +1,6 @@
 {
-  "name": "vue-config",
-  "short_name": "vue-config",
+  "name": "vue-cli-config",
+  "short_name": "vue-cli-config",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
