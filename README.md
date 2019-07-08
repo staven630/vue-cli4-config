@@ -28,18 +28,19 @@
 
 ### <span id="env">✅ 配置多环境变量</span>
 &emsp;&emsp;通过在package.json里的 scripts 配置项中添加--mode xxx 来选择不同环境
-<br />
+
 &emsp;&emsp;只有以 VUE_APP 开头的变量会被 webpack.DefinePlugin 静态嵌入到客户端侧的包中，代码中可以通过 process.env.VUE_APP_BASE_API 访问
-<br />
+
 &emsp;&emsp;NODE_ENV 和 BASE_URL 是两个特殊变量，在代码中始终可用
-<br />
+
 ##### 配置
 &emsp;&emsp;在项目根目录中新建.env, .env.production, .env.analyz等文件
-<br />
+
 * .env
-<br />
+
 &emsp;&emsp;serve 默认的本地开发环境配置
-```
+
+```javascript
 NODE_ENV = 'development'
 BASE_URL = './'
 VUE_APP_PUBLIC_PATH = './'
@@ -47,9 +48,11 @@ VUE_APP_API = 'https://test.staven630.com/api'
 ```
 
 * .env.production
-<br />
+  
 &emsp;&emsp;build 默认的环境配置
-```
+
+
+```javascript
 NODE_ENV = 'production'
 BASE_URL = 'https://prod.staven630.com/'
 VUE_APP_PUBLIC_PATH = 'https://prod.oss.com/staven-blog'
@@ -63,9 +66,10 @@ PREFIX = 'staven-blog'
 ```
 
 * .env.analyz
-<br />
+  
 &emsp;&emsp;自定义build环境配置
-```
+
+```javascript
 NODE_ENV = 'production'
 BASE_URL = 'https://prod.staven630.com/'
 VUE_APP_PUBLIC_PATH = 'https://prod.oss.com/staven-blog'
@@ -79,7 +83,9 @@ PREFIX = 'staven-blog'
 
 IS_ANALYZE = true
 ```
+
 &emsp;&emsp;修改 package.json
+
 ```javascript
 "scripts": {
   "serve": "vue-cli-service serve",
@@ -88,7 +94,9 @@ IS_ANALYZE = true
   "lint": "vue-cli-service lint"
 }
 ```
+
 ##### 使用环境变量
+
 ```javascript
 <template>
   <div class="home">
@@ -821,7 +829,7 @@ module.exports = {
 [▲ 回顶部](#top)
 
 ### <span id="allconfig">✅ 完整配置</span>
-```
+```javascript
 const path = require("path");
 // const glob = require("glob-all");
 // const PurgecssPlugin = require("purgecss-webpack-plugin");
