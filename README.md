@@ -838,7 +838,7 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
 // const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 // const CompressionWebpackPlugin = require("compression-webpack-plugin");
 // const PrerenderSpaPlugin = require("prerender-spa-plugin");
-const AliOssPlugin = require("webpack-oss");
+// const AliOssPlugin = require("webpack-oss");
 const resolve = dir => path.join(__dirname, dir);
 const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 // const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i;
