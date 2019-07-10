@@ -713,19 +713,19 @@ module.exports = {
         new PrerenderSpaPlugin({
           staticDir: resolve('dist'),
           routes: ['/'],
-          postProcess(renderedRoute) {
-            renderedRoute.route = renderedRoute.originalRoute
-            renderedRoute.html = renderedRoute.html
+          postProcess(ctx) {
+            ctx.route = ctx.originalRoute
+            ctx.html = ctx.html
               .split(/>[\s]+</gim)
               .join('><')
-            if (renderedRoute.route.endsWith('.html')) {
-              renderedRoute.outputPath = path.join(
+            if (ctx.route.endsWith('.html')) {
+              ctx.outputPath = path.join(
                 __dirname,
                 'dist',
-                renderedRoute.route
+                ctx.route
               )
             }
-            return renderedRoute
+            return ctx
           },
           minify: {
             collapseBooleanAttributes: true,
