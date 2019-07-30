@@ -246,7 +246,7 @@ module.exports = {
 
 ### <span id="compressimage">✅ 压缩图片</span>
 
-```javascript
+```bash
 npm i -D image-webpack-loader
 ```
 
@@ -273,7 +273,7 @@ module.exports = {
 
 ### <span id="spritesmith">✅ 自动生成雪碧图</span>
 &emsp;&emsp;默认src/assets/icons中存放需要生成雪碧图的png文件。首次运行npm run serve/build会生成雪碧图，并在跟目录生成icons.json文件。再次运行命令时，会对比icons目录内文件与icons.json的匹配关系，确定是否需要再次执行webpack-spritesmith插件。
-```javascript
+```bash
 npm i -D webpack-spritesmith
 ```
 
@@ -376,7 +376,7 @@ module.exports = {
 
 - 方案一：@fullhuman/postcss-purgecss
 
-```javascript
+```bash
 npm i -D postcss-import @fullhuman/postcss-purgecss
 ```
 
@@ -424,7 +424,7 @@ module.exports = {
 
 - 方案二：purgecss-webpack-plugin
 
-```javascript
+```bash
 npm i -D glob-all purgecss-webpack-plugin
 ```
 
@@ -561,7 +561,7 @@ htmlWebpackPlugin.options.cdn.js) { %>
 ### <span id="log">✅ 去掉 console.log</span>
 ##### 方法一：使用 babel-plugin-transform-remove-console 插件
 
-```javascript
+```bash
 npm i --D babel-plugin-transform-remove-console
 ```
 
@@ -657,7 +657,7 @@ module.exports = {
 [▲ 回顶部](#top)
 ### <span id="gzip">✅ 开启gzip压缩</span>
 
-```javascript
+```bash
 npm i --D compression-webpack-plugin
 ```
 
@@ -688,7 +688,7 @@ module.exports = {
 
 &emsp;&emsp;还可以开启比 gzip 体验更好的 Zopfli 压缩详见[https://webpack.js.org/plugins/compression-webpack-plugin](https://webpack.js.org/plugins/compression-webpack-plugin)
 
-```javascript
+```bash
 npm i --save-dev @gfx/zopfli brotli-webpack-plugin
 ```
 
@@ -760,7 +760,7 @@ module.exports = {
 
 在 scss 中引用
 
-```javascript
+```css
 .home {
     background: url($src + '/images/500.png');
 }
@@ -770,7 +770,7 @@ module.exports = {
 
 ### <span id="globalstylus">✅ 为 stylus 提供全局变量</span>
 
-```
+```bash
 npm i -D style-resources-loader
 ```
 
@@ -798,11 +798,11 @@ module.exports = {
 [▲ 回顶部](#top)
 
 ### <span id="prerender">预渲染prerender-spa-plugin</span>
-```
+```bash
 npm i -D prerender-spa-plugin
 ```
 
-```
+```javascript
 const PrerenderSpaPlugin = require('prerender-spa-plugin')
 const path = require('path')
 const resolve = dir => path.join(__dirname, dir)
@@ -852,7 +852,7 @@ module.exports = {
 }
 ```
 &emsp;&emsp;mounted()中添加document.dispatchEvent(new Event('render-event'))
-```
+```js
 new Vue({
   router,
   store,
@@ -867,7 +867,7 @@ new Vue({
 
 ### <span id="ie">✅ 添加IE兼容</span>
 
-```javascript
+```bash
 npm i --save @babel/polyfill
 ```
 
@@ -895,7 +895,7 @@ module.exports = {
 
 &emsp;&emsp;开启文件上传 ali oss，需要将 publicPath 改成 ali oss 资源 url 前缀,也就是修改 VUE_APP_PUBLIC_PATH
 
-```javascript
+```bash
 npm i -D webpack-oss
 ```
 
