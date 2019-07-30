@@ -13,6 +13,7 @@
 - [√ 修复 Lazy loading routes Error： Cyclic dependency](#lazyloading)
 - [√ 添加别名alias](#alias)
 - [√ 压缩图片](#compressimage)
+- [√ 自动生成雪碧图](#spritesmith)
 - [√ 去除多余无效的 css](#removecss)
 - [√ 添加打包分析](#analyze)
 - [√ 配置 externals 引入cdn资源](#externals)
@@ -267,6 +268,108 @@ module.exports = {
 }
 ```
 
+
+[▲ 回顶部](#top)
+
+### <span id="spritesmith">✅ 自动生成雪碧图</span>
+&emsp;&emsp;默认src/assets/icons中存放需要生成雪碧图的png文件。首次运行npm run serve/build会生成雪碧图，并在跟目录生成icons.json文件。再次运行命令时，会对比icons目录内文件与icons.json的匹配关系，确定是否需要再次执行webpack-spritesmith插件。
+```javascript
+npm i -D webpack-spritesmith
+```
+
+```javascript
+const SpritesmithPlugin = require('webpack-spritesmith')
+const path = require('path')
+const fs = require('fs')
+
+let has_sprite = true
+
+try {
+  let result = fs.readFileSync(path.resolve(__dirname, './icons.json'), 'utf8')
+  result = JSON.parse(result)
+  const files = fs.readdirSync(path.resolve(__dirname, './src/assets/icons'))
+  if (files && files.length) {
+    has_sprite = files.some(item => {
+      let filename = item.toLocaleLowerCase().replace(/_/g, '-')
+      return !result[filename]
+    })
+      ? true
+      : false
+  } else {
+    has_sprite = false
+  }
+} catch (error) {}
+
+// 雪碧图样式处理模板
+const SpritesmithTemplate = function(data) {
+  // pc
+  let icons = {}
+  let tpl = `.ico { 
+  display: inline-block; 
+  background-image: url(${data.sprites[0].image}); 
+  background-size: ${data.spritesheet.width}px ${data.spritesheet.height}px; 
+}`
+
+  data.sprites.forEach(sprite => {
+    const name = '' + sprite.name.toLocaleLowerCase().replace(/_/g, '-')
+    icons[`${name}.png`] = true
+    tpl = `${tpl} 
+.ico-${name}{
+  width: ${sprite.width}px; 
+  height: ${sprite.height}px; 
+  background-position: ${sprite.offset_x}px ${sprite.offset_y}px;
+}
+`
+  })
+
+  fs.writeFile(
+    path.resolve(__dirname, './icons.json'),
+    JSON.stringify(icons, null, 2),
+    (err, data) => {}
+  )
+
+  return tpl
+}
+
+module.exports = {
+  configureWebpack: config => {
+    const plugins = []
+    if (has_sprite) {
+      plugins.push(
+        new SpritesmithPlugin({
+          src: {
+            cwd: path.resolve(__dirname, './src/assets/icons/'), // 图标根路径
+            glob: '**/*.png' // 匹配任意 png 图标
+          },
+          target: {
+            image: path.resolve(__dirname, './src/assets/images/sprites.png'), // 生成雪碧图目标路径与名称
+            // 设置生成CSS背景及其定位的文件或方式
+            css: [
+              [
+                path.resolve(__dirname, './src/assets/scss/sprites.scss'),
+                {
+                  format: 'function_based_template'
+                }
+              ]
+            ]
+          },
+          customTemplates: {
+            function_based_template: SpritesmithTemplate
+          },
+          apiOptions: {
+            cssImageRef: '../images/sprites.png' // css文件中引用雪碧图的相对位置路径配置
+          },
+          spritesmithOptions: {
+            padding: 2
+          }
+        })
+      )
+    }
+    config.plugins = [...config.plugins, ...plugins]
+  }
+}
+```
+
 [▲ 回顶部](#top)
 
 ### <span id="removecss">✅ 去除多余无效的 css</span>
@@ -440,22 +543,16 @@ module.exports = {
 <!-- 使用CDN的CSS文件 -->
 <% for (var i in htmlWebpackPlugin.options.cdn &&
 htmlWebpackPlugin.options.cdn.css) { %>
-<link
-  href="<%= htmlWebpackPlugin.options.cdn.css[i] %>"
-  rel="external nofollow"
-  rel="preload"
-  as="style"
-/>
+<link rel="stylesheet" href="<%= htmlWebpackPlugin.options.cdn.css[i] %>" />
 <% } %>
+
 <!-- 使用CDN的JS文件 -->
 <% for (var i in htmlWebpackPlugin.options.cdn &&
 htmlWebpackPlugin.options.cdn.js) { %>
-<link
-  href="<%= htmlWebpackPlugin.options.cdn.js[i] %>"
-  rel="external nofollow"
-  rel="preload"
-  as="script"
-/>
+<script
+  type="text/javascript"
+  src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"
+></script>
 <% } %>
 ```
 
@@ -641,17 +738,23 @@ module.exports = {
 
 ```javascript
 module.exports = {
-    css: {
-        modules: false,
-        extract: IS_PROD,
-        sourceMap: false,
-        loaderOptions: {
-          sass: {
-            // 向全局sass样式传入共享的全局变量
-            data: `@import "~assets/scss/variables.scss";$src: "${process.env.VUE_APP_PUBLIC_PATH}";`
-          }
-        }
+  css: {
+    modules: false,
+    extract: IS_PROD,
+    sourceMap: false,
+    loaderOptions: {
+      sass: {
+        // 向全局sass样式传入共享的全局变量
+        data: `
+          @import "@scss/config.scss";
+          @import "@scss/variables.scss";
+          @import "@scss/mixins.scss";
+          @import "@scss/utils.scss";
+          $src: "${process.env.VUE_APP_OSS_SRC}";
+          `
+      }
     }
+  }
 }
 ```
 

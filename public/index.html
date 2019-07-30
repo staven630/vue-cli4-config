@@ -7,25 +7,18 @@
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title>vue-cli-config</title>
     <!-- 使用CDN的CSS文件 -->
-    <!-- <% for (var i in htmlWebpackPlugin.options.cdn &&
+    <% for (var i in htmlWebpackPlugin.options.cdn &&
     htmlWebpackPlugin.options.cdn.css) { %>
-    <link
-      href="<%= htmlWebpackPlugin.options.cdn.css[i] %>"
-      rel="external nofollow"
-      rel="preload"
-      as="style"
-    />
-    <% } %> -->
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.cdn.css[i] %>" />
+    <% } %>
     <!-- 使用CDN的JS文件 -->
-    <!-- <% for (var i in htmlWebpackPlugin.options.cdn &&
+    <% for (var i in htmlWebpackPlugin.options.cdn &&
     htmlWebpackPlugin.options.cdn.js) { %>
-    <link
-      href="<%= htmlWebpackPlugin.options.cdn.js[i] %>"
-      rel="external nofollow"
-      rel="preload"
-      as="script"
-    />
-    <% } %> -->
+    <script
+      type="text/javascript"
+      src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"
+    ></script>
+    <% } %>
   </head>
   <body>
     <noscript>
