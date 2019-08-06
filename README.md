@@ -870,7 +870,7 @@ new Vue({
 ```
 ##### 为自定义预渲染页面添加自定义title、description、content
 * 删除public/index.html中关于description、content的meta标签。保留title标签
-* 配置metas.js
+* 配置router-config.js
 ```js
 module.exports = {
   "/": {
