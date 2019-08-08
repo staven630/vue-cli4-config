@@ -743,6 +743,8 @@ module.exports = {
 &emsp;&emsp;css 中可以使用注入 sass 变量访问环境变量中的配置信息
 
 ```javascript
+const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
+
 module.exports = {
   css: {
     modules: false,
@@ -750,18 +752,18 @@ module.exports = {
     sourceMap: false,
     loaderOptions: {
       sass: {
-        // 向全局sass样式传入共享的全局变量
+        // 向全局sass样式传入共享的全局变量, $src可以配置图片cdn前缀
         data: `
-          @import "@scss/config.scss";
-          @import "@scss/variables.scss";
-          @import "@scss/mixins.scss";
-          @import "@scss/utils.scss";
-          $src: "${process.env.VUE_APP_OSS_SRC}";
-          `
+        @import "@scss/config.scss";
+        @import "@scss/variables.scss";
+        @import "@scss/mixins.scss";
+        @import "@scss/utils.scss";
+        $src: "${process.env.VUE_APP_OSS_SRC}";
+        `
       }
     }
   }
-}
+};
 ```
 
 在 scss 中引用
@@ -1027,9 +1029,12 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
 // const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 // const CompressionWebpackPlugin = require("compression-webpack-plugin");
 // const PrerenderSpaPlugin = require("prerender-spa-plugin");
-// const AliOssPlugin = require("webpack-oss");
+const AliOssPlugin = require("webpack-oss");
 const resolve = dir => path.join(__dirname, dir);
 const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
+// const SpritesmithPlugin = require('webpack-spritesmith')
+// let has_sprite = true
+
 // const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i;
 
 // const addStylusResource = rule => {
@@ -1040,6 +1045,53 @@ const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 //       patterns: [resolve("src/assets/stylus/variable.styl")]
 //     });
 // };
+
+// try {
+//   let result = fs.readFileSync(path.resolve(__dirname, './icons.json'), 'utf8')
+//   result = JSON.parse(result)
+//   const files = fs.readdirSync(path.resolve(__dirname, './src/assets/icons'))
+//   if (files && files.length) {
+//     has_sprite = files.some(item => {
+//       let filename = item.toLocaleLowerCase().replace(/_/g, '-')
+//       return !result[filename]
+//     })
+//       ? true
+//       : false
+//   } else {
+//     has_sprite = false
+//   }
+// } catch (error) {}
+
+// 雪碧图样式处理模板
+// const SpritesmithTemplate = function(data) {
+//   // pc
+//   let icons = {}
+//   let tpl = `.ico {
+//   display: inline-block;
+//   background-image: url(${data.sprites[0].image});
+//   background-size: ${data.spritesheet.width}px ${data.spritesheet.height}px;
+// }`
+
+//   data.sprites.forEach(sprite => {
+//     const name = '' + sprite.name.toLocaleLowerCase().replace(/_/g, '-')
+//     icons[`${name}.png`] = true
+//     tpl = `${tpl}
+// .ico-${name}{
+//   width: ${sprite.width}px;
+//   height: ${sprite.height}px;
+//   background-position: ${sprite.offset_x}px ${sprite.offset_y}px;
+// }
+// `
+//   })
+
+//   fs.writeFile(
+//     path.resolve(__dirname, './icons.json'),
+//     JSON.stringify(icons, null, 2),
+//     (err, data) => {}
+//   )
+
+//   return tpl
+// }
 
 module.exports = {
   publicPath: IS_PROD ? process.env.VUE_APP_PUBLIC_PATH : "./", // 默认'/'，部署应用包时的基本 URL
@@ -1164,6 +1216,39 @@ module.exports = {
       vuex: "Vuex",
       axios: "axios"
     };
+
+    // if (has_sprite) {
+    //   plugins.push(
+    //     new SpritesmithPlugin({
+    //       src: {
+    //         cwd: path.resolve(__dirname, './src/assets/icons/'), // 图标根路径
+    //         glob: '**/*.png' // 匹配任意 png 图标
+    //       },
+    //       target: {
+    //         image: path.resolve(__dirname, './src/assets/images/sprites.png'), // 生成雪碧图目标路径与名称
+    //         // 设置生成CSS背景及其定位的文件或方式
+    //         css: [
+    //           [
+    //             path.resolve(__dirname, './src/assets/scss/sprites.scss'),
+    //             {
+    //               format: 'function_based_template'
+    //             }
+    //           ]
+    //         ]
+    //       },
+    //       customTemplates: {
+    //         function_based_template: SpritesmithTemplate
+    //       },
+    //       apiOptions: {
+    //         cssImageRef: '../images/sprites.png' // css文件中引用雪碧图的相对位置路径配置
+    //       },
+    //       spritesmithOptions: {
+    //         padding: 2
+    //       }
+    //     })
+    //   )
+    // }
+
     config.plugins = [...config.plugins, ...plugins];
   },
   chainWebpack: config => {
@@ -1241,10 +1326,14 @@ module.exports = {
     sourceMap: false,
     loaderOptions: {
       sass: {
-        // 向全局sass样式传入共享的全局变量
-        data: `@import "~assets/scss/variables.scss";$src: "${
-          process.env.VUE_APP_PUBLIC_PATH
-        }";`
+        // 向全局sass样式传入共享的全局变量, $src可以配置图片cdn前缀
+        data: `
+        @import "@scss/config.scss";
+        @import "@scss/variables.scss";
+        @import "@scss/mixins.scss";
+        @import "@scss/utils.scss";
+        $src: "${process.env.VUE_APP_OSS_SRC}";
+        `
       }
     }
   },

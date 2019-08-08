@@ -12,7 +12,6 @@
     "commit": "git-cz",
     "commit:retry": "git-cz --retry",
     "commit:noverify": "git-cz --no-verify",
-    "precommit": "npm run build && lint-staged",
     "release": "standard-version",
     "push": "git push --follow-tags origin master"
   },
@@ -20,6 +19,7 @@
     "@babel/polyfill": "^7.4.4",
     "axios": "^0.19.0",
     "core-js": "^2.6.5",
+    "moment": "^2.24.0",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
@@ -65,9 +65,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run precommit",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "npm run test"
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "lint-staged": {

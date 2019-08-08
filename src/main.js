@@ -6,6 +6,10 @@ import "./registerServiceWorker";
 
 Vue.config.productionTip = false;
 
+import moment from "moment";
+
+console.log(moment().format("dddd"));
+
 new Vue({
   router,
   store,
