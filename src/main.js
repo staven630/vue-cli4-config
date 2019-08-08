@@ -7,6 +7,7 @@ import "./registerServiceWorker";
 Vue.config.productionTip = false;
 
 import moment from "moment";
+import "moment/locale/zh-cn";
 
 console.log(moment().format("dddd"));
 

@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 // const glob = require("glob-all");
 // const PurgecssPlugin = require("purgecss-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
@@ -6,7 +7,7 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
 // const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 // const CompressionWebpackPlugin = require("compression-webpack-plugin");
 // const PrerenderSpaPlugin = require("prerender-spa-plugin");
-const AliOssPlugin = require("webpack-oss");
+// const AliOssPlugin = require("webpack-oss");
 const resolve = dir => path.join(__dirname, dir);
 const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 // const SpritesmithPlugin = require('webpack-spritesmith')
@@ -231,6 +232,11 @@ module.exports = {
   chainWebpack: config => {
     // 修复HMR
     config.resolve.symlinks(true);
+    config
+      .plugin("ignore")
+      .use(
+        new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn$/)
+      );
 
     const cdn = {
       // 访问https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本

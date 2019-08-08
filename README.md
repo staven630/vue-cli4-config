@@ -23,6 +23,7 @@
 - [√ 去除多余无效的 css](#removecss)
 - [√ 添加打包分析](#analyze)
 - [√ 配置 externals 引入cdn资源](#externals)
+- [√ 删除moment语言包](#moment)
 - [√ 去掉 console.log](#log)
 - [√ 利用splitChunks单独打包第三方模块](#splitchunks)
 - [√ 开启 gzip 压缩](#gzip)
@@ -97,7 +98,7 @@ IS_ANALYZE = true
 "scripts": {
   "serve": "vue-cli-service serve",
   "build": "vue-cli-service build",
-  "analyz": "vue-cli-service build --mode analyze",
+  "analyz": "vue-cli-service build --mode analyz",
   "lint": "vue-cli-service lint"
 }
 ```
@@ -483,7 +484,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 module.exports = {
     chainWebpack: config => {
         // 打包分析
-        if (process.env.IS_ANALYZ) {
+        if (process.env.IS_ANALY) {
           config.plugin('webpack-report')
             .use(BundleAnalyzerPlugin, [{
               analyzerMode: 'static',
@@ -495,11 +496,11 @@ module.exports = {
 &emsp;&emsp;需要添加.env.analyz文件
 ```javascript
 NODE_ENV = 'production'
-IS_ANALYZE = true
+IS_ANALYZ = true
 ```
 &emsp;&emsp;package.json的scripts中添加
 ```javascript
-"analyz": "vue-cli-service build --mode analyze"
+"analyz": "vue-cli-service build --mode analyz"
 ```
 执行
 ```javascript
@@ -560,6 +561,27 @@ htmlWebpackPlugin.options.cdn.js) { %>
   src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"
 ></script>
 <% } %>
+```
+
+[▲ 回顶部](#top)
+
+### <span id="moment">✅ 删除moment语言包</span>
+&emsp;&emsp;删除moment除zh-cn中文包外的其它语言包，无需在代码中手动引入zh-cn语言包。
+
+```javascript
+const webpack = require("webpack");
+
+module.exports = {
+  chainWebpack: config => {
+    config
+      .plugin("ignore")
+      .use(
+        new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn$/)
+      );
+
+    return config;
+  }
+};
 ```
 
 [▲ 回顶部](#top)
@@ -1022,6 +1044,7 @@ module.exports = {
 ### <span id="allconfig">✅ 完整配置</span>
 ```javascript
 const path = require("path");
+const webpack = require("webpack");
 // const glob = require("glob-all");
 // const PurgecssPlugin = require("purgecss-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
@@ -1029,7 +1052,7 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
 // const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 // const CompressionWebpackPlugin = require("compression-webpack-plugin");
 // const PrerenderSpaPlugin = require("prerender-spa-plugin");
-const AliOssPlugin = require("webpack-oss");
+// const AliOssPlugin = require("webpack-oss");
 const resolve = dir => path.join(__dirname, dir);
 const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 // const SpritesmithPlugin = require('webpack-spritesmith')
@@ -1254,6 +1277,11 @@ module.exports = {
   chainWebpack: config => {
     // 修复HMR
     config.resolve.symlinks(true);
+    config
+      .plugin("ignore")
+      .use(
+        new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn$/)
+      );
 
     const cdn = {
       // 访问https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本
