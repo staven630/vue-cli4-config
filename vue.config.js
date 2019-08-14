@@ -28,17 +28,13 @@ const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 //   let result = fs.readFileSync(path.resolve(__dirname, './icons.json'), 'utf8')
 //   result = JSON.parse(result)
 //   const files = fs.readdirSync(path.resolve(__dirname, './src/assets/icons'))
-//   if (files && files.length) {
-//     has_sprite = files.some(item => {
-//       let filename = item.toLocaleLowerCase().replace(/_/g, '-')
-//       return !result[filename]
-//     })
-//       ? true
-//       : false
-//   } else {
-//     has_sprite = false
-//   }
-// } catch (error) {}
+//   has_sprite = files && files.length ? files.some(item => {
+//     let filename = item.toLocaleLowerCase().replace(/_/g, '-')
+//     return !result[filename]
+//   }) : false
+// } finally {
+//   has_sprite = false
+// }
 
 // 雪碧图样式处理模板
 // const SpritesmithTemplate = function(data) {
