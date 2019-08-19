@@ -999,40 +999,39 @@ module.exports = {
 
 ### <span id="alioss">✅ 文件上传 ali oss</span>
 
-&emsp;&emsp;开启文件上传 ali oss，需要将 publicPath 改成 ali oss 资源 url 前缀,也就是修改 VUE_APP_PUBLIC_PATH
+&emsp;&emsp;开启文件上传 ali oss，需要将 publicPath 改成 ali oss 资源 url 前缀,也就是修改 VUE_APP_PUBLIC_PATH。具体配置参见[webpack-oss](https://github.com/staven630/webpack-oss)
 
 ```bash
 npm i -D webpack-oss
 ```
 
 ```javascript
-const AliOssPlugin = require('webpack-oss');
+const AliOssPlugin = require("webpack-oss");
+const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
+
+const format = AliOssPlugin.getFormat();
 
 module.exports = {
-    configureWebpack: config => {
-        if (IS_PROD) {
-            const plugins = [];
-            // 上传文件到oss
-            if (process.env.ACCESS_KEY_ID || process.env.ACCESS_KEY_SECRET || process.env.REGION || process.env.BUCKET || process.env.PREFIX) {
-                plugins.push(
-                    new AliOssPlugin({
-                        accessKeyId: process.env.ACCESS_KEY_ID,
-                        accessKeySecret: process.env.ACCESS_KEY_SECRET,
-                        region: process.env.REGION,
-                        bucket: process.env.BUCKET,
-                        prefix: process.env.PREFIX,
-                        exclude: /.*\.html$/,
-                        deleteAll: false
-                    })
-                );
-            }
-            config.plugins = [
-                ...config.plugins,
-                ...plugins
-            ];
-        }
+  publicPath: IS_PROD ? `${process.env.VUE_APP_PUBLIC_PATH}/${format}` : "./", // 默认'/'，部署应用包时的基本 URL
+  configureWebpack: config => {
+    const plugins = [];
+
+    if (IS_PROD) {
+      plugins.push(
+        new AliOssPlugin({
+          accessKeyId: process.env.ACCESS_KEY_ID,
+          accessKeySecret: process.env.ACCESS_KEY_SECRET,
+          region: process.env.REGION,
+          bucket: process.env.BUCKET,
+          prefix: process.env.PREFIX,
+          exclude: /.*\.html$/,
+          format
+        })
+      );
     }
-}
+    config.plugins = [...config.plugins, ...plugins];
+  }
+};
 ```
 
 [▲ 回顶部](#top)
@@ -1069,17 +1068,13 @@ const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 //   let result = fs.readFileSync(path.resolve(__dirname, './icons.json'), 'utf8')
 //   result = JSON.parse(result)
 //   const files = fs.readdirSync(path.resolve(__dirname, './src/assets/icons'))
-//   if (files && files.length) {
-//     has_sprite = files.some(item => {
-//       let filename = item.toLocaleLowerCase().replace(/_/g, '-')
-//       return !result[filename]
-//     })
-//       ? true
-//       : false
-//   } else {
-//     has_sprite = false
-//   }
-// } catch (error) {}
+//   has_sprite = files && files.length ? files.some(item => {
+//     let filename = item.toLocaleLowerCase().replace(/_/g, '-')
+//     return !result[filename]
+//   }) : false
+// } finally {
+//   has_sprite = false
+// }
 
 // 雪碧图样式处理模板
 // const SpritesmithTemplate = function(data) {
@@ -1111,6 +1106,7 @@ const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 
 //   return tpl
 // }
+// const format = AliOssPlugin.getFormat();
 
 module.exports = {
   publicPath: IS_PROD ? process.env.VUE_APP_PUBLIC_PATH : "./", // 默认'/'，部署应用包时的基本 URL
@@ -1224,17 +1220,17 @@ module.exports = {
       //     bucket: process.env.BUCKET,
       //     prefix: process.env.PREFIX,
       //     exclude: /.*\.html$/,
-      //     deleteAll: false
+      //     format
       //   })
       // );
     }
-    config.externals = {
-      vue: "Vue",
-      "element-ui": "ELEMENT",
-      "vue-router": "VueRouter",
-      vuex: "Vuex",
-      axios: "axios"
-    };
+    // config.externals = {
+    //   vue: "Vue",
+    //   "element-ui": "ELEMENT",
+    //   "vue-router": "VueRouter",
+    //   vuex: "Vuex",
+    //   axios: "axios"
+    // };
 
     // if (has_sprite) {
     //   plugins.push(
@@ -1279,17 +1275,17 @@ module.exports = {
         new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn$/)
       );
 
-    const cdn = {
-      // 访问https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本
-      css: ["//unpkg.com/element-ui@2.10.1/lib/theme-chalk/index.css"],
-      js: [
-        "//unpkg.com/vue@2.6.10/dist/vue.min.js", // 访问https://unpkg.com/vue/dist/vue.min.js获取最新版本
-        "//unpkg.com/vue-router@3.0.6/dist/vue-router.min.js",
-        "//unpkg.com/vuex@3.1.1/dist/vuex.min.js",
-        "//unpkg.com/axios@0.19.0/dist/axios.min.js",
-        "//unpkg.com/element-ui@2.10.1/lib/index.js"
-      ]
-    };
+    // const cdn = {
+    //   // 访问https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本
+    //   css: ["//unpkg.com/element-ui@2.10.1/lib/theme-chalk/index.css"],
+    //   js: [
+    //     "//unpkg.com/vue@2.6.10/dist/vue.min.js", // 访问https://unpkg.com/vue/dist/vue.min.js获取最新版本
+    //     "//unpkg.com/vue-router@3.0.6/dist/vue-router.min.js",
+    //     "//unpkg.com/vuex@3.1.1/dist/vuex.min.js",
+    //     "//unpkg.com/axios@0.19.0/dist/axios.min.js",
+    //     "//unpkg.com/element-ui@2.10.1/lib/index.js"
+    //   ]
+    // };
 
     config.plugin("html").tap(args => {
       // 修复 Lazy loading routes Error

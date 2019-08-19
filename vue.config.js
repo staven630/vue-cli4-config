@@ -66,6 +66,7 @@ const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 
 //   return tpl
 // }
+// const format = AliOssPlugin.getFormat();
 
 module.exports = {
   publicPath: IS_PROD ? process.env.VUE_APP_PUBLIC_PATH : "./", // 默认'/'，部署应用包时的基本 URL
@@ -179,17 +180,17 @@ module.exports = {
       //     bucket: process.env.BUCKET,
       //     prefix: process.env.PREFIX,
       //     exclude: /.*\.html$/,
-      //     deleteAll: false
+      //     format
       //   })
       // );
     }
-    config.externals = {
-      vue: "Vue",
-      "element-ui": "ELEMENT",
-      "vue-router": "VueRouter",
-      vuex: "Vuex",
-      axios: "axios"
-    };
+    // config.externals = {
+    //   vue: "Vue",
+    //   "element-ui": "ELEMENT",
+    //   "vue-router": "VueRouter",
+    //   vuex: "Vuex",
+    //   axios: "axios"
+    // };
 
     // if (has_sprite) {
     //   plugins.push(
@@ -234,17 +235,17 @@ module.exports = {
         new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn$/)
       );
 
-    const cdn = {
-      // 访问https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本
-      css: ["//unpkg.com/element-ui@2.10.1/lib/theme-chalk/index.css"],
-      js: [
-        "//unpkg.com/vue@2.6.10/dist/vue.min.js", // 访问https://unpkg.com/vue/dist/vue.min.js获取最新版本
-        "//unpkg.com/vue-router@3.0.6/dist/vue-router.min.js",
-        "//unpkg.com/vuex@3.1.1/dist/vuex.min.js",
-        "//unpkg.com/axios@0.19.0/dist/axios.min.js",
-        "//unpkg.com/element-ui@2.10.1/lib/index.js"
-      ]
-    };
+    // const cdn = {
+    //   // 访问https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本
+    //   css: ["//unpkg.com/element-ui@2.10.1/lib/theme-chalk/index.css"],
+    //   js: [
+    //     "//unpkg.com/vue@2.6.10/dist/vue.min.js", // 访问https://unpkg.com/vue/dist/vue.min.js获取最新版本
+    //     "//unpkg.com/vue-router@3.0.6/dist/vue-router.min.js",
+    //     "//unpkg.com/vuex@3.1.1/dist/vuex.min.js",
+    //     "//unpkg.com/axios@0.19.0/dist/axios.min.js",
+    //     "//unpkg.com/element-ui@2.10.1/lib/index.js"
+    //   ]
+    // };
 
     config.plugin("html").tap(args => {
       // 修复 Lazy loading routes Error

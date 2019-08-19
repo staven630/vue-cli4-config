@@ -60,7 +60,7 @@
     "standard-version": "^7.0.0",
     "uglifyjs-webpack-plugin": "^2.1.3",
     "vue-template-compiler": "^2.6.10",
-    "webpack-oss": "^2.1.2",
+    "webpack-oss": "^2.1.5",
     "webpack-spritesmith": "^1.0.1"
   },
   "husky": {
