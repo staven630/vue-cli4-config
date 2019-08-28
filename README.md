@@ -408,7 +408,7 @@ if (IS_PROD) {
                 /<style([\s\S]*?)<\/style>+/gim,
                 ''
               )
-              return validSection..match(/[A-Za-z0-9-_/:]*[A-Za-z0-9-_/]+/g) || []
+              return validSection.match(/[A-Za-z0-9-_/:]*[A-Za-z0-9-_/]+/g) || []
             }
           },
           extensions: ['html', 'vue']
@@ -453,7 +453,7 @@ module.exports = {
                     /<style([\s\S]*?)<\/style>+/gim,
                     ""
                   );
-                  return validSection..match(/[A-Za-z0-9-_/:]*[A-Za-z0-9-_/]+/g) || []
+                  return validSection.match(/[A-Za-z0-9-_/:]*[A-Za-z0-9-_/]+/g) || []
                 }
               },
               extensions: ["html", "vue"]
