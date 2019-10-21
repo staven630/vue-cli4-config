@@ -767,9 +767,10 @@ module.exports = {
     extract: IS_PROD,
     sourceMap: false,
     loaderOptions: {
-      sass: {
+      scss: {
         // 向全局sass样式传入共享的全局变量, $src可以配置图片cdn前缀
-        data: `
+        // 详情: https://cli.vuejs.org/guide/css.html#passing-options-to-pre-processor-loaders
+        prependData: `
         @import "@scss/config.scss";
         @import "@scss/variables.scss";
         @import "@scss/mixins.scss";
@@ -1343,9 +1344,9 @@ module.exports = {
     extract: IS_PROD,
     sourceMap: false,
     loaderOptions: {
-      sass: {
+      scss: {
         // 向全局sass样式传入共享的全局变量, $src可以配置图片cdn前缀
-        data: `
+        prependData: `
         @import "@scss/config.scss";
         @import "@scss/variables.scss";
         @import "@scss/mixins.scss";
