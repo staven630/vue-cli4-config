@@ -301,7 +301,6 @@ module.exports = {
     return config;
   },
   css: {
-    requireModuleExtension: false,
     extract: IS_PROD,
     sourceMap: false,
     loaderOptions: {

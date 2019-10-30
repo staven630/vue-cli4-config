@@ -802,7 +802,6 @@ const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
 
 module.exports = {
   css: {
-    modules: false,
     extract: IS_PROD,
     sourceMap: false,
     loaderOptions: {
