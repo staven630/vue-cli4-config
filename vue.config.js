@@ -301,13 +301,13 @@ module.exports = {
     return config;
   },
   css: {
-    requireModuleExtension: false,
+    module: false,
     extract: IS_PROD,
     sourceMap: false,
     loaderOptions: {
       scss: {
         // 向全局sass样式传入共享的全局变量, $src可以配置图片cdn前缀
-        prependData: `
+        data: `
         @import "@scss/config.scss";
         @import "@scss/variables.scss";
         @import "@scss/mixins.scss";
