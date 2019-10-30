@@ -309,7 +309,7 @@ try {
           return !result[filename]
         })
       : false
-} finally {
+} catch (e) {
   has_sprite = false
 }
 
@@ -622,7 +622,7 @@ module.exports = {
 ##### 方法一：使用 babel-plugin-transform-remove-console 插件
 
 ```bash
-npm i --D babel-plugin-transform-remove-console
+npm i -D babel-plugin-transform-remove-console
 ```
 
 在 babel.config.js 中配置
@@ -717,7 +717,7 @@ module.exports = {
 ### <span id="gzip">✅ 开启 gzip 压缩</span>
 
 ```bash
-npm i --D compression-webpack-plugin
+npm i -D compression-webpack-plugin
 ```
 
 ```javascript
@@ -748,7 +748,7 @@ module.exports = {
 &emsp;&emsp;还可以开启比 gzip 体验更好的 Zopfli 压缩详见[https://webpack.js.org/plugins/compression-webpack-plugin](https://webpack.js.org/plugins/compression-webpack-plugin)
 
 ```bash
-npm i --save-dev @gfx/zopfli brotli-webpack-plugin
+npm i -D @gfx/zopfli brotli-webpack-plugin
 ```
 
 ```javascript
@@ -1002,7 +1002,7 @@ module.exports = {
 ### <span id="ie">✅ 添加 IE 兼容</span>
 
 ```bash
-npm i --save @babel/polyfill
+npm i -S @babel/polyfill
 ```
 
 &emsp;&emsp;在 main.js 中添加
