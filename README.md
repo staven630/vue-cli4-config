@@ -4,6 +4,8 @@
 
 &emsp;&emsp;不建议直接拉取此项目作为模板，希望能按照此教程按需配置，或者复制 vue.config.js 增删配置,并自行安装所需依赖。
 
+&emsp;&emsp;vue-cli3 配置键 [vue-cli3 分支](https://github.com/staven630/vue-cli3-config/tree/vue-cli3)。
+
 ### 其他系列
 
 ★ [Blog](https://github.com/staven630/blog)
