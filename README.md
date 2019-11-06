@@ -4,7 +4,7 @@
 
 &emsp;&emsp;不建议直接拉取此项目作为模板，希望能按照此教程按需配置，或者复制 vue.config.js 增删配置,并自行安装所需依赖。
 
-&emsp;&emsp;vue-cli3 配置键 [vue-cli3 分支](https://github.com/staven630/vue-cli3-config/tree/vue-cli3)。
+&emsp;&emsp;vue-cli3 配置见 [vue-cli3 分支](https://github.com/staven630/vue-cli3-config/tree/vue-cli3)。
 
 ### 其他系列
 
@@ -22,6 +22,7 @@
 - [√ 添加别名 alias](#alias)
 - [√ 压缩图片](#compressimage)
 - [√ 自动生成雪碧图](#spritesmith)
+- [√ 使用 SVG 组件](#svg)
 - [√ 去除多余无效的 css](#removecss)
 - [√ 添加打包分析](#analyze)
 - [√ 配置 externals 引入 cdn 资源](#externals)
@@ -381,6 +382,98 @@ module.exports = {
       )
     }
     config.plugins = [...config.plugins, ...plugins]
+  }
+}
+```
+
+[▲ 回顶部](#top)
+
+### <span id="svg">使用 SVG 组件</span>
+
+```bash
+npm i -D image-webpack-loader
+```
+
+&emsp;&emsp;新增 SvgIcon 组件。
+
+```javascript
+<template>
+  <svg class="svg-icon"
+       aria-hidden="true">
+    <use :xlink:href="iconName" />
+  </svg>
+</template>
+
+<script>
+export default {
+  name: 'SvgIcon',
+  props: {
+    iconClass: {
+      type: String,
+      required: true
+    }
+  },
+  computed: {
+    iconName() {
+      return `#icon-${this.iconClass}`
+    }
+  }
+}
+</script>
+
+<style scoped>
+.svg-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+</style>
+```
+
+&emsp;&emsp;在 src 文件夹中创建 icons 文件夹。icons 文件夹中新增 svg 文件夹（用来存放 svg 文件）与 index.js 文件：
+
+```js
+import SvgIcon from '@/components/SvgIcon'
+import Vue from 'vue'
+
+// 注册到全局
+Vue.component('svg-icon', SvgIcon)
+
+const requireAll = requireContext => requireContext.keys().map(requireContext)
+const req = require.context('./svg', false, /\.svg$/)
+requireAll(req)
+```
+
+&emsp;&emsp;在 main.js 中导入 icons/index.js
+
+```javascript
+import '@/icons'
+```
+
+&emsp;&emsp;修改 vue.config.js
+
+```javascript
+const path = require('path')
+const resolve = dir => path.join(__dirname, dir)
+
+module.exports = {
+  chainWebpack: config => {
+    const svgRule = config.module.rule('svg')
+    svgRule.uses.clear()
+    svgRule.exclude.add(/node_modules/)
+    svgRule
+      .test(/\.svg$/)
+      .use('svg-sprite-loader')
+      .loader('svg-sprite-loader')
+      .options({
+        symbolId: 'icon-[name]'
+      })
+
+    const imagesRule = config.module.rule('images')
+    imagesRule.exclude.add(resolve('src/icons'))
+    config.module.rule('images').test(/\.(png|jpe?g|gif|svg)(\?.*)?$/)
   }
 }
 ```

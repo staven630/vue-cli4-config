@@ -1,15 +1,21 @@
+import "./registerServiceWorker";
+import "@/icons";
+import "moment/locale/zh-cn";
+
 import Vue from "vue";
+import Router from "vue-router";
+
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import "./registerServiceWorker";
 
 Vue.config.productionTip = false;
 
-import moment from "moment";
-import "moment/locale/zh-cn";
-
-console.log(moment().format("dddd"));
+Vue.use(router);
+const originalPush = Router.prototype.push;
+Router.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err);
+};
 
 new Vue({
   router,
