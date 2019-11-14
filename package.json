@@ -9,7 +9,6 @@
     "commit": "git-cz",
     "commit:retry": "git-cz --retry",
     "commit:noverify": "git-cz --no-verify",
-    "precommit": "npm run build && lint-staged",
     "release": "standard-version",
     "push": "git push --follow-tags origin master"
   },
