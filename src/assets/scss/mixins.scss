@@ -1,0 +1,21 @@
+@mixin wrapper($ele) {
+  .#{$ele} {
+    @content;
+  }
+}
+
+@mixin ellipsis($w: auto) {
+  width: $w;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+
+@mixin ellipsisLn($line: 2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line;
+}
