@@ -65,6 +65,10 @@ module.exports = {
   configureWebpack: config => {
     const plugins = [];
 
+    if (IS_PROD) {
+
+    }
+
     if (has_sprite) {
       // 生成雪碧图
       plugins.push(
