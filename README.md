@@ -26,6 +26,7 @@
 - [√ 去除多余无效的 css](#removecss)
 - [√ 添加打包分析](#analyze)
 - [√ 配置 externals 引入 cdn 资源](#externals)
+- [√ 多页面打包](#multiple-pages)
 - [√ 删除 moment 语言包](#moment)
 - [√ 去掉 console.log](#log)
 - [√ 利用 splitChunks 单独打包第三方模块](#splitchunks)
@@ -222,8 +223,9 @@ module.exports = {
 ```javascript
 module.exports = {
   chainWebpack: config => {
-    // 修复 Lazy loading routes Error
+    // 如果使用多页面打包，使用vue inspect --plugins查看html是否在结果数组中
     config.plugin("html").tap(args => {
+      // 修复 Lazy loading routes Error
       args[0].chunksSortMode = "none";
       return args;
     });
@@ -263,7 +265,33 @@ module.exports = {
 
 ### <span id="compressimage">✅ 压缩图片</span>
 
-&emsp;&emsp;vue-cli3.0 方法失效。待解决。
+```javascript
+npm i -D image-webpack-loader
+```
+
+&emsp;&emsp;在某些版本的 OSX 上安装可能会因缺少 libpng 依赖项而引发错误。可以通过安装最新版本的 libpng 来解决。
+
+```javascript
+brew install libpng
+```
+
+```javascript
+module.exports = {
+  chainWebpack: config => {
+    config.module
+      .rule("images")
+      .use("image-webpack-loader")
+      .loader("image-webpack-loader")
+      .options({
+        mozjpeg: { progressive: true, quality: 65 },
+        optipng: { enabled: false },
+        pngquant: { quality: [0.65, 0.9], speed: 4 },
+        gifsicle: { interlaced: false },
+        webp: { quality: 75 }
+      });
+  }
+};
+```
 
 [▲ 回顶部](#top)
 
@@ -627,8 +655,9 @@ module.exports = {
       ]
     };
 
-    // html中添加cdn
+    // 如果使用多页面打包，使用vue inspect --plugins查看html是否在结果数组中
     config.plugin("html").tap(args => {
+      // html中添加cdn
       args[0].cdn = cdn;
       return args;
     });
@@ -653,6 +682,148 @@ htmlWebpackPlugin.options.cdn.js) { %>
   src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"
 ></script>
 <% } %>
+```
+
+[▲ 回顶部](#top)
+
+### <span id="multiple-pages">✅ 多页面打包</span>
+
+&emsp;&emsp;多入口页面打包，建议在 src 目录下新建 pages 目录存放多页面模块。
+
+- pages.config.js
+
+&emsp;&emsp; 配置多页面信息。src/main.js 文件对应 main 字段，其他根据参照 pages 为根路径为字段。如下:
+
+```javascript
+module.exports = {
+  main: {
+    template: "public/index.html",
+    filename: "index.html",
+    title: "主页",
+    chunks: ["chunk-vendors", "chunk-common", "index"]
+  },
+  "pages/admin": {
+    template: "public/index.html",
+    filename: "admin.html",
+    title: "后台管理",
+    chunks: ["chunk-vendors", "chunk-common", "index"]
+  },
+  "pages/mobile": {
+    template: "public/index.html",
+    filename: "mobile.html",
+    title: "移动端",
+    chunks: ["chunk-vendors", "chunk-common", "index"]
+  }
+};
+```
+
+- vue.config.js
+
+&emsp;&emsp;vue.config.js 的 pages 字段为多页面提供配置
+
+```javascript
+const glob = require("glob");
+const pagesInfo = require("./pages.config");
+const pages = {};
+
+glob.sync("./src/**/main.js").forEach(p => {
+  let result = p.match(/\.\/src\/(.*)\/main\.js/);
+  result = result ? result[1] : "";
+  const key = result ? result : "main";
+  if (pagesInfo[key]) {
+    pages[key] = {
+      entry: result ? `src/${result}/main.js` : "src/main.js"
+    };
+    for (const info in pagesInfo[key]) {
+      pages[key] = {
+        ...pages[key],
+        [info]: pagesInfo[key][info]
+      };
+    }
+  }
+});
+module.exports = {
+  chainWebpack: config => {
+    // 防止多页面打包卡顿
+    config => config.plugins.delete("named-chunks");
+
+    return config;
+  },
+  pages
+};
+```
+
+&emsp;&emsp;如果多页面打包需要使用 CDN，使用 vue inspect --plugins 查看 html 是否在结果数组中的形式。上例中 plugins 列表中存在'html-main','html-pages/admin','html-pages/mobile'， 没有'html'。因此不能再使用 config.plugin("html")。
+
+```javascript
+const path = require("path");
+const resolve = dir => path.join(__dirname, dir);
+const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
+
+const glob = require("glob");
+const pagesInfo = require("./pages.config");
+const pages = {};
+
+glob.sync("./src/**/main.js").forEach(p => {
+  let result = p.match(/\.\/src\/(.*)\/main\.js/);
+  result = result ? result[1] : "";
+  const key = result ? result : "main";
+  if (pagesInfo[key]) {
+    pages[key] = {
+      entry: result ? `src/${result}/main.js` : "src/main.js"
+    };
+    for (const info in pagesInfo[key]) {
+      pages[key] = {
+        ...pages[key],
+        [info]: pagesInfo[key][info]
+      };
+    }
+  }
+});
+
+module.exports = {
+  publicPath: IS_PROD ? process.env.VUE_APP_PUBLIC_PATH : "./", //
+  configureWebpack: config => {
+    config.externals = {
+      vue: "Vue",
+      "element-ui": "ELEMENT",
+      "vue-router": "VueRouter",
+      vuex: "Vuex",
+      axios: "axios"
+    };
+  },
+  chainWebpack: config => {
+    const cdn = {
+      // 访问https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本
+      css: ["//unpkg.com/element-ui@2.10.1/lib/theme-chalk/index.css"],
+      js: [
+        "//unpkg.com/vue@2.6.10/dist/vue.min.js", // 访问https://unpkg.com/vue/dist/vue.min.js获取最新版本
+        "//unpkg.com/vue-router@3.0.6/dist/vue-router.min.js",
+        "//unpkg.com/vuex@3.1.1/dist/vuex.min.js",
+        "//unpkg.com/axios@0.19.0/dist/axios.min.js",
+        "//unpkg.com/element-ui@2.10.1/lib/index.js"
+      ]
+    };
+
+    // 防止多页面打包卡顿
+    config => config.plugins.delete("named-chunks");
+
+    // 多页面cdn添加
+    Object.keys(pagesInfo).forEach(page => {
+      console.log(page);
+      config.plugin(`html-${page}`).tap(args => {
+        // html中添加cdn
+        args[0].cdn = cdn;
+
+        // 修复 Lazy loading routes Error
+        args[0].chunksSortMode = "none";
+        return args;
+      });
+    });
+    return config;
+  },
+  pages
+};
 ```
 
 [▲ 回顶部](#top)
@@ -1381,9 +1552,10 @@ module.exports = {
     //   ]
     // };
 
+    // 如果使用多页面打包，使用vue inspect --plugins查看html是否在结果数组中
     config.plugin("html").tap(args => {
       // 修复 Lazy loading routes Error
-      args[0].chunksSortMode = "none";
+      // args[0].chunksSortMode = "none";
       // html中添加cdn
       // args[0].cdn = cdn;
       return args;

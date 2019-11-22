@@ -8,6 +8,27 @@ const fs = require("fs");
 const resolve = dir => path.join(__dirname, dir);
 const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 
+const glob = require('glob')
+const pagesInfo = require('./pages.config')
+const pages = {}
+
+glob.sync('./src/**/main.js').forEach(p => {
+  let result = p.match(/\.\/src\/(.*)\/main\.js/)
+  result = result ? result[1] : '';
+  const key = result ? result : 'main';
+  if (pagesInfo[key]) {
+    pages[key] = {
+      entry: result ? `src/${result}/main.js` : 'src/main.js'
+    }
+    for (const info in pagesInfo[key]) {
+      pages[key] = {
+        ...pages[key],
+        [info]: pagesInfo[key][info]
+      }
+    }
+  }
+})
+
 let has_sprite = true
 let iconsObj;
 let files;
@@ -112,12 +133,6 @@ module.exports = {
     // 修复HMR
     config.resolve.symlinks(true);
 
-    // 修复 Lazy loading routes Error
-    config.plugin("html").tap(args => {
-      args[0].chunksSortMode = "none";
-      return args;
-    });
-
     config
       .plugin("ignore")
       .use(
@@ -153,28 +168,45 @@ module.exports = {
       ]
     };
 
-    // html中添加cdn
-    config.plugin("html").tap(args => {
-      args[0].cdn = cdn;
-      return args;
-    });
+    // 如果使用多页面打包，使用vue inspect --plugins查看html是否在结果数组中
+    // config.plugin("html").tap(args => {
+    //   // html中添加cdn
+    //   args[0].cdn = cdn;
+
+    //   // 修复 Lazy loading routes Error
+    //   args[0].chunksSortMode = "none";
+    //   return args;
+    // });
+
+    // 防止多页面打包卡顿
+    config => config.plugins.delete('named-chunks')
+
+    // 多页面cdn添加
+    Object.keys(pagesInfo).forEach(page => {
+      config.plugin(`html-${page}`).tap(args => {
+        // html中添加cdn
+        args[0].cdn = cdn;
+
+        // 修复 Lazy loading routes Error
+        args[0].chunksSortMode = "none";
+        return args;
+      });
+    })
 
     if (IS_PROD) {
       // 压缩图片
-      // console.log(config.module
-      //   .rule("images"));
-      // config.module
-      //   .rule("images")
-      //   .test(/\.(png|jpe?g|gif|svg)(\?.*)?$/)
-      //   .use("image-webpack-loader")
-      //   .loader("image-webpack-loader")
-      //   .options({
-      //     mozjpeg: { progressive: true, quality: 65 },
-      //     optipng: { enabled: false },
-      //     pngquant: { quality: [0.65, 0.90], speed: 4 },
-      //     gifsicle: { interlaced: false },
-      //     webp: { quality: 75 }
-      //   });
+      config.module
+        .rule("images")
+        .test(/\.(png|jpe?g|gif|svg)(\?.*)?$/)
+        .use("image-webpack-loader")
+        .loader("image-webpack-loader")
+        .options({
+          mozjpeg: { progressive: true, quality: 65 },
+          optipng: { enabled: false },
+          pngquant: { quality: [0.65, 0.90], speed: 4 },
+          gifsicle: { interlaced: false },
+          webp: { quality: 75 }
+        });
 
       // 打包分析
       config.plugin("webpack-report").use(BundleAnalyzerPlugin, [
@@ -202,6 +234,7 @@ module.exports = {
 
     return config;
   },
+  pages,
   css: {
     extract: IS_PROD,
     sourceMap: false,
