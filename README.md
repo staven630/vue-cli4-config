@@ -22,6 +22,7 @@
 - [√ 添加别名 alias](#alias)
 - [√ 压缩图片](#compressimage)
 - [√ 自动生成雪碧图](#spritesmith)
+- [√ SVG 转 font 字体](#font)
 - [√ 使用 SVG 组件](#svg)
 - [√ 去除多余无效的 css](#removecss)
 - [√ 添加打包分析](#analyze)
@@ -278,17 +279,19 @@ brew install libpng
 ```javascript
 module.exports = {
   chainWebpack: config => {
-    config.module
-      .rule("images")
-      .use("image-webpack-loader")
-      .loader("image-webpack-loader")
-      .options({
-        mozjpeg: { progressive: true, quality: 65 },
-        optipng: { enabled: false },
-        pngquant: { quality: [0.65, 0.9], speed: 4 },
-        gifsicle: { interlaced: false },
-        webp: { quality: 75 }
-      });
+    if (IS_PROD) {
+      config.module
+        .rule("images")
+        .use("image-webpack-loader")
+        .loader("image-webpack-loader")
+        .options({
+          mozjpeg: { progressive: true, quality: 65 },
+          optipng: { enabled: false },
+          pngquant: { quality: [0.65, 0.9], speed: 4 },
+          gifsicle: { interlaced: false },
+          webp: { quality: 75 }
+        });
+    }
   }
 };
 ```
@@ -396,6 +399,71 @@ module.exports = {
     config.plugins = [...config.plugins, ...plugins];
   }
 };
+```
+
+[▲ 回顶部](#top)
+
+### <span id="font">SVG 转 font 字体</span>
+
+```bash
+npm i -D svgtofont
+```
+
+&emsp;&emsp;根目录新增 scripts 目录，并新建 svg2font.js 文件：
+
+```javascript
+const svgtofont = require("svgtofont");
+const path = require("path");
+const pkg = require("../package.json");
+
+svgtofont({
+  src: path.resolve(process.cwd(), "src/assets/svg"), // svg 图标目录路径
+  dist: path.resolve(process.cwd(), "src/assets/fonts"), // 输出到指定目录中
+  fontName: "icon", // 设置字体名称
+  css: true, // 生成字体文件
+  startNumber: 20000, // unicode起始编号
+  svgicons2svgfont: {
+    fontHeight: 1000,
+    normalize: true
+  },
+  // website = null, 没有演示html文件
+  website: {
+    title: "icon",
+    logo: "",
+    version: pkg.version,
+    meta: {
+      description: "",
+      keywords: ""
+    },
+    description: ``,
+    links: [
+      {
+        title: "Font Class",
+        url: "index.html"
+      },
+      {
+        title: "Unicode",
+        url: "unicode.html"
+      }
+    ],
+    footerInfo: ``
+  }
+}).then(() => {
+  console.log("done!");
+});
+```
+
+&emsp;&emsp;添加 package.json scripts 配置：
+
+```javascript
+"prebuild": "npm run font",
+"font": "node scripts/svg2font.js",
+```
+
+&emsp;&emsp;执行：
+
+```javascript
+npm run font
 ```
 
 [▲ 回顶部](#top)
@@ -910,8 +978,8 @@ module.exports = {
 
 ### <span id="splitchunks">利用 splitChunks 单独打包第三方模块</span>
 
-```
-const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
+```javascript
+const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 
 module.exports = {
   configureWebpack: config => {
@@ -919,30 +987,52 @@ module.exports = {
       config.optimization = {
         splitChunks: {
           cacheGroups: {
-            libs: {
-              name: 'chunk-libs',
+            common: {
+              name: "chunk-common",
+              chunks: "initial",
+              minChunks: 2,
+              maxInitialRequests: 5,
+              minSize: 0,
+              priority: 1,
+              reuseExistingChunk: true,
+              enforce: true
+            },
+            vendors: {
+              name: "chunk-vendors",
               test: /[\\/]node_modules[\\/]/,
-              priority: 10,
-              chunks: 'initial'
+              chunks: "initial",
+              priority: 2,
+              reuseExistingChunk: true,
+              enforce: true
             },
             elementUI: {
-              name: 'chunk-elementUI',
-              priority: 20,
+              name: "chunk-elementui",
               test: /[\\/]node_modules[\\/]element-ui[\\/]/,
-              chunks: 'all'
+              chunks: "all",
+              priority: 3,
+              reuseExistingChunk: true,
+              enforce: true
+            },
+            echarts: {
+              name: "chunk-echarts",
+              test: /[\\/]node_modules[\\/](vue-)?echarts[\\/]/,
+              chunks: "all",
+              priority: 4,
+              reuseExistingChunk: true,
+              enforce: true
             }
           }
         }
-      }
+      };
     }
   },
   chainWebpack: config => {
     if (IS_PROD) {
-      config.optimization.delete('splitChunks')
+      config.optimization.delete("splitChunks");
     }
-    return config
+    return config;
   }
-}
+};
 ```
 
 [▲ 回顶部](#top)
