@@ -403,7 +403,7 @@ module.exports = {
 
 [▲ 回顶部](#top)
 
-### <span id="font">SVG 转 font 字体</span>
+### <span id="font">✅ SVG 转 font 字体</span>
 
 ```bash
 npm i -D svgtofont
