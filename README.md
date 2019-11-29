@@ -288,8 +288,8 @@ module.exports = {
           mozjpeg: { progressive: true, quality: 65 },
           optipng: { enabled: false },
           pngquant: { quality: [0.65, 0.9], speed: 4 },
-          gifsicle: { interlaced: false },
-          webp: { quality: 75 }
+          gifsicle: { interlaced: false }
+          // webp: { quality: 75 }
         });
     }
   }
@@ -1598,8 +1598,7 @@ module.exports = {
           mozjpeg: { progressive: true, quality: 65 },
           optipng: { enabled: false },
           pngquant: { quality: [0.65, 0.9], speed: 4 },
-          gifsicle: { interlaced: false },
-          webp: { quality: 75 }
+          gifsicle: { interlaced: false }
         });
 
       // 打包分析
@@ -1621,7 +1620,7 @@ module.exports = {
       .options({
         symbolId: "icon-[name]"
       });
-    å;
+
     const imagesRule = config.module.rule("images");
     imagesRule.exclude.add(resolve("src/icons"));
     config.module.rule("images").test(/\.(png|jpe?g|gif|svg)(\?.*)?$/);
