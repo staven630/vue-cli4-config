@@ -29,32 +29,36 @@ glob.sync('./src/**/main.js').forEach(p => {
   }
 })
 
-let has_sprite = true
-let iconsObj;
-let files;
+let has_sprite = true;
+let files = [];
 
 try {
-  files = fs.readdirSync(resolve('./src/assets/icons'))
-  iconsObj = fs.readFileSync(resolve('./icons.json'), 'utf8')
-  iconsObj = JSON.parse(iconsObj)
-  has_sprite =
-    files && files.length
-      ? files.some(item => {
-        let filename = item.toLocaleLowerCase().replace(/_/g, '-')
-        return !iconsObj[filename]
-      })
-      : false
+  fs.statSync(resolve("./src/assets/icons"));
 } catch (error) {
-  const icons = {};
-  files.forEach(item => {
-    let filename = item.toLocaleLowerCase().replace(/_/g, '-')
-    icons[filename] = true
-  })
-  fs.writeFileSync(resolve('./icons.json'), JSON.stringify(icons, null, 2))
-  has_sprite = true
+  fs.mkdirSync(resolve("./src/assets/icons"));
 }
+files = fs.readdirSync(resolve("./src/assets/icons"));
 
-
+if (!files.length) {
+  has_sprite = false;
+} else {
+  try {
+    let iconsObj = fs.readFileSync(resolve("./icons.json"), "utf8", {});
+    iconsObj = JSON.parse(iconsObj);
+    has_sprite = files.some(item => {
+      let filename = item.toLocaleLowerCase().replace(/_/g, "-");
+      return !iconsObj[filename];
+    });
+  } catch (error) {
+    const icons = {};
+    files.forEach(item => {
+      let filename = item.toLocaleLowerCase().replace(/_/g, "-");
+      icons[filename] = true;
+    });
+    fs.writeFileSync(resolve("./icons.json"), JSON.stringify(icons, null, 2));
+    has_sprite = true;
+  }
+}
 // 雪碧图样式处理模板
 const SpritesmithTemplate = function (data) {
   // pc
