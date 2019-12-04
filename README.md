@@ -56,10 +56,10 @@
 &emsp;&emsp;serve 默认的本地开发环境配置
 
 ```javascript
-NODE_ENV = "development";
-BASE_URL = "./";
-VUE_APP_PUBLIC_PATH = "./";
-VUE_APP_API = "https://test.staven630.com/api";
+NODE_ENV = "development"
+BASE_URL = "./"
+VUE_APP_PUBLIC_PATH = "./"
+VUE_APP_API = "https://test.staven630.com/api"
 ```
 
 - .env.production
@@ -67,16 +67,16 @@ VUE_APP_API = "https://test.staven630.com/api";
 &emsp;&emsp;build 默认的环境配置（正式服务器）
 
 ```javascript
-NODE_ENV = "production";
-BASE_URL = "https://prod.staven630.com/";
-VUE_APP_PUBLIC_PATH = "https://prod.oss.com/staven-blog";
-VUE_APP_API = "https://prod.staven630.com/api";
+NODE_ENV = "production"
+BASE_URL = "https://prod.staven630.com/"
+VUE_APP_PUBLIC_PATH = "https://prod.oss.com/staven-blog"
+VUE_APP_API = "https://prod.staven630.com/api"
 
-ACCESS_KEY_ID = "xxxxxxxxxxxxx";
-ACCESS_KEY_SECRET = "xxxxxxxxxxxxx";
-REGION = "oss-cn-hangzhou";
-BUCKET = "staven-prod";
-PREFIX = "staven-blog";
+ACCESS_KEY_ID = "xxxxxxxxxxxxx"
+ACCESS_KEY_SECRET = "xxxxxxxxxxxxx"
+REGION = "oss-cn-hangzhou"
+BUCKET = "staven-prod"
+PREFIX = "staven-blog"
 ```
 
 - .env.crm
@@ -84,16 +84,16 @@ PREFIX = "staven-blog";
 &emsp;&emsp;自定义 build 环境配置（预发服务器）
 
 ```javascript
-NODE_ENV = "production";
-BASE_URL = "https://crm.staven630.com/";
-VUE_APP_PUBLIC_PATH = "https://crm.oss.com/staven-blog";
-VUE_APP_API = "https://crm.staven630.com/api";
+NODE_ENV = "production"
+BASE_URL = "https://crm.staven630.com/"
+VUE_APP_PUBLIC_PATH = "https://crm.oss.com/staven-blog"
+VUE_APP_API = "https://crm.staven630.com/api"
 
-ACCESS_KEY_ID = "xxxxxxxxxxxxx";
-ACCESS_KEY_SECRET = "xxxxxxxxxxxxx";
-REGION = "oss-cn-hangzhou";
-BUCKET = "staven-crm";
-PREFIX = "staven-blog";
+ACCESS_KEY_ID = "xxxxxxxxxxxxx"
+ACCESS_KEY_SECRET = "xxxxxxxxxxxxx"
+REGION = "oss-cn-hangzhou"
+BUCKET = "staven-crm"
+PREFIX = "staven-blog"
 
 IS_ANALYZE = true;
 ```
@@ -309,34 +309,39 @@ npm i -D webpack-spritesmith
 ```javascript
 let has_sprite = true;
 let files = [];
+const icons = {};
 
 try {
   fs.statSync(resolve("./src/assets/icons"));
+  files = fs.readdirSync(resolve("./src/assets/icons"));
+  files.forEach(item => {
+    let filename = item.toLocaleLowerCase().replace(/_/g, "-");
+    icons[filename] = true;
+  });
+
 } catch (error) {
   fs.mkdirSync(resolve("./src/assets/icons"));
 }
-files = fs.readdirSync(resolve("./src/assets/icons"));
 
 if (!files.length) {
   has_sprite = false;
 } else {
   try {
-    let iconsObj = fs.readFileSync(resolve("./icons.json"), "utf8", {});
+    let iconsObj = fs.readFileSync(resolve("./icons.json"), "utf8");
     iconsObj = JSON.parse(iconsObj);
     has_sprite = files.some(item => {
       let filename = item.toLocaleLowerCase().replace(/_/g, "-");
       return !iconsObj[filename];
     });
+    if (has_sprite) {
+      fs.writeFileSync(resolve("./icons.json"), JSON.stringify(icons, null, 2));
+    }
   } catch (error) {
-    const icons = {};
-    files.forEach(item => {
-      let filename = item.toLocaleLowerCase().replace(/_/g, "-");
-      icons[filename] = true;
-    });
     fs.writeFileSync(resolve("./icons.json"), JSON.stringify(icons, null, 2));
     has_sprite = true;
   }
 }
+
 // 雪碧图样式处理模板
 const SpritesmithTemplate = function(data) {
   // pc
@@ -1403,80 +1408,85 @@ const fs = require("fs");
 const resolve = dir => path.join(__dirname, dir);
 const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 
-const glob = require("glob");
-const pagesInfo = require("./pages.config");
-const pages = {};
+const glob = require('glob')
+const pagesInfo = require('./pages.config')
+const pages = {}
 
-glob.sync("./src/**/main.js").forEach(p => {
-  let result = p.match(/\.\/src\/(.*)\/main\.js/);
-  result = result ? result[1] : "";
-  const key = result ? result : "main";
+glob.sync('./src/**/main.js').forEach(p => {
+  let result = p.match(/\.\/src\/(.*)\/main\.js/)
+  result = result ? result[1] : '';
+  const key = result ? result : 'main';
   if (pagesInfo[key]) {
     pages[key] = {
-      entry: result ? `src/${result}/main.js` : "src/main.js"
-    };
+      entry: result ? `src/${result}/main.js` : 'src/main.js'
+    }
     for (const info in pagesInfo[key]) {
       pages[key] = {
         ...pages[key],
         [info]: pagesInfo[key][info]
-      };
+      }
     }
   }
-});
+})
 
 let has_sprite = true;
 let files = [];
+const icons = {};
 
 try {
   fs.statSync(resolve("./src/assets/icons"));
+  files = fs.readdirSync(resolve("./src/assets/icons"));
+  files.forEach(item => {
+    let filename = item.toLocaleLowerCase().replace(/_/g, "-");
+    icons[filename] = true;
+  });
+
 } catch (error) {
   fs.mkdirSync(resolve("./src/assets/icons"));
 }
-files = fs.readdirSync(resolve("./src/assets/icons"));
 
 if (!files.length) {
   has_sprite = false;
 } else {
   try {
-    let iconsObj = fs.readFileSync(resolve("./icons.json"), "utf8", {});
+    let iconsObj = fs.readFileSync(resolve("./icons.json"), "utf8");
     iconsObj = JSON.parse(iconsObj);
     has_sprite = files.some(item => {
       let filename = item.toLocaleLowerCase().replace(/_/g, "-");
       return !iconsObj[filename];
     });
+    if (has_sprite) {
+      fs.writeFileSync(resolve("./icons.json"), JSON.stringify(icons, null, 2));
+    }
   } catch (error) {
-    const icons = {};
-    files.forEach(item => {
-      let filename = item.toLocaleLowerCase().replace(/_/g, "-");
-      icons[filename] = true;
-    });
     fs.writeFileSync(resolve("./icons.json"), JSON.stringify(icons, null, 2));
     has_sprite = true;
   }
 }
+
 // 雪碧图样式处理模板
-const SpritesmithTemplate = function(data) {
+const SpritesmithTemplate = function (data) {
   // pc
-  let icons = {};
+  let icons = {}
   let tpl = `.ico { 
   display: inline-block; 
   background-image: url(${data.sprites[0].image}); 
   background-size: ${data.spritesheet.width}px ${data.spritesheet.height}px; 
-}`;
+}`
 
   data.sprites.forEach(sprite => {
-    const name = "" + sprite.name.toLocaleLowerCase().replace(/_/g, "-");
-    icons[`${name}.png`] = true;
+    const name = '' + sprite.name.toLocaleLowerCase().replace(/_/g, '-')
+    icons[`${name}.png`] = true
     tpl = `${tpl} 
 .ico-${name}{
   width: ${sprite.width}px; 
   height: ${sprite.height}px; 
   background-position: ${sprite.offset_x}px ${sprite.offset_y}px;
 }
-`;
-  });
-  return tpl;
-};
+`
+  })
+  return tpl
+}
 
 module.exports = {
   publicPath: IS_PROD ? process.env.VUE_APP_PUBLIC_PATH : "./", // 默认'/'，部署应用包时的基本 URL
@@ -1490,17 +1500,17 @@ module.exports = {
       plugins.push(
         new SpritesmithPlugin({
           src: {
-            cwd: path.resolve(__dirname, "./src/assets/icons/"), // 图标根路径
-            glob: "**/*.png" // 匹配任意 png 图标
+            cwd: path.resolve(__dirname, './src/assets/icons/'), // 图标根路径
+            glob: '**/*.png' // 匹配任意 png 图标
           },
           target: {
-            image: path.resolve(__dirname, "./src/assets/images/sprites.png"), // 生成雪碧图目标路径与名称
+            image: path.resolve(__dirname, './src/assets/images/sprites.png'), // 生成雪碧图目标路径与名称
             // 设置生成CSS背景及其定位的文件或方式
             css: [
               [
-                path.resolve(__dirname, "./src/assets/scss/sprites.scss"),
+                path.resolve(__dirname, './src/assets/scss/sprites.scss'),
                 {
-                  format: "function_based_template"
+                  format: 'function_based_template'
                 }
               ]
             ]
@@ -1509,13 +1519,13 @@ module.exports = {
             function_based_template: SpritesmithTemplate
           },
           apiOptions: {
-            cssImageRef: "../images/sprites.png" // css文件中引用雪碧图的相对位置路径配置
+            cssImageRef: '../images/sprites.png' // css文件中引用雪碧图的相对位置路径配置
           },
           spritesmithOptions: {
             padding: 2
           }
         })
-      );
+      )
     }
 
     config.externals = {
@@ -1578,7 +1588,7 @@ module.exports = {
     // });
 
     // 防止多页面打包卡顿
-    config => config.plugins.delete("named-chunks");
+    config => config.plugins.delete('named-chunks')
 
     // 多页面cdn添加
     Object.keys(pagesInfo).forEach(page => {
@@ -1590,7 +1600,7 @@ module.exports = {
         args[0].chunksSortMode = "none";
         return args;
       });
-    });
+    })
 
     if (IS_PROD) {
       // 压缩图片
@@ -1602,7 +1612,7 @@ module.exports = {
         .options({
           mozjpeg: { progressive: true, quality: 65 },
           optipng: { enabled: false },
-          pngquant: { quality: [0.65, 0.9], speed: 4 },
+          pngquant: { quality: [0.65, 0.90], speed: 4 },
           gifsicle: { interlaced: false }
         });
 

@@ -31,34 +31,39 @@ glob.sync('./src/**/main.js').forEach(p => {
 
 let has_sprite = true;
 let files = [];
+const icons = {};
 
 try {
   fs.statSync(resolve("./src/assets/icons"));
+  files = fs.readdirSync(resolve("./src/assets/icons"));
+  files.forEach(item => {
+    let filename = item.toLocaleLowerCase().replace(/_/g, "-");
+    icons[filename] = true;
+  });
+
 } catch (error) {
   fs.mkdirSync(resolve("./src/assets/icons"));
 }
-files = fs.readdirSync(resolve("./src/assets/icons"));
 
 if (!files.length) {
   has_sprite = false;
 } else {
   try {
-    let iconsObj = fs.readFileSync(resolve("./icons.json"), "utf8", {});
+    let iconsObj = fs.readFileSync(resolve("./icons.json"), "utf8");
     iconsObj = JSON.parse(iconsObj);
     has_sprite = files.some(item => {
       let filename = item.toLocaleLowerCase().replace(/_/g, "-");
       return !iconsObj[filename];
     });
+    if (has_sprite) {
+      fs.writeFileSync(resolve("./icons.json"), JSON.stringify(icons, null, 2));
+    }
   } catch (error) {
-    const icons = {};
-    files.forEach(item => {
-      let filename = item.toLocaleLowerCase().replace(/_/g, "-");
-      icons[filename] = true;
-    });
     fs.writeFileSync(resolve("./icons.json"), JSON.stringify(icons, null, 2));
     has_sprite = true;
   }
 }
+
 // 雪碧图样式处理模板
 const SpritesmithTemplate = function (data) {
   // pc
