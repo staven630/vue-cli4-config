@@ -12,19 +12,14 @@ const glob = require('glob')
 const pagesInfo = require('./pages.config')
 const pages = {}
 
-glob.sync('./src/**/main.js').forEach(p => {
-  let result = p.match(/\.\/src\/(.*)\/main\.js/)
-  result = result ? result[1] : '';
-  const key = result ? result : 'main';
-  if (pagesInfo[key]) {
-    pages[key] = {
-      entry: result ? `src/${result}/main.js` : 'src/main.js'
-    }
-    for (const info in pagesInfo[key]) {
-      pages[key] = {
-        ...pages[key],
-        [info]: pagesInfo[key][info]
-      }
+glob.sync('./src/pages/**/main.js').forEach(entry => {
+  let chunk = entry.match(/\.\/src\/pages\/(.*)\/main\.js/)[1];
+  const curr = pagesInfo[chunk];
+  if (curr) {
+    pages[chunk] = {
+      entry,
+      ...curr,
+      chunk: ["chunk-vendors", "chunk-common", chunk]
     }
   }
 })
@@ -141,6 +136,9 @@ module.exports = {
   chainWebpack: config => {
     // 修复HMR
     config.resolve.symlinks(true);
+
+    // config.plugins.delete('preload');
+    // config.plugins.delete('prefetch');
 
     config
       .plugin("ignore")

@@ -1,20 +1,17 @@
 module.exports = {
-  'main': {
-    template: 'public/index.html',
-    filename: 'index.html',
-    title: '主页',
-    chunks: ['chunk-vendors', 'chunk-common', 'index']
-  },
-  'pages/admin': {
+  'admin': {
     template: 'public/index.html',
     filename: 'admin.html',
     title: '后台管理',
-    chunks: ['chunk-vendors', 'chunk-common', 'index']
   },
-  'pages/mobile': {
+  'mobile': {
     template: 'public/index.html',
     filename: 'mobile.html',
     title: '移动端',
-    chunks: ['chunk-vendors', 'chunk-common', 'index']
+  },
+  'pc/crm': {
+    template: 'public/index.html',
+    filename: 'pc-crm.html',
+    title: '预发服务',
   }
 }

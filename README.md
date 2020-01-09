@@ -769,25 +769,22 @@ htmlWebpackPlugin.options.cdn.js) { %>
 
 ```javascript
 module.exports = {
-  main: {
-    template: "public/index.html",
-    filename: "index.html",
-    title: "主页",
-    chunks: ["chunk-vendors", "chunk-common", "index"]
+  'admin': {
+    template: 'public/index.html',
+    filename: 'admin.html',
+    title: '后台管理',
   },
-  "pages/admin": {
-    template: "public/index.html",
-    filename: "admin.html",
-    title: "后台管理",
-    chunks: ["chunk-vendors", "chunk-common", "index"]
+  'mobile': {
+    template: 'public/index.html',
+    filename: 'mobile.html',
+    title: '移动端',
   },
-  "pages/mobile": {
-    template: "public/index.html",
-    filename: "mobile.html",
-    title: "移动端",
-    chunks: ["chunk-vendors", "chunk-common", "index"]
+  'pc/crm': {
+    template: 'public/index.html',
+    filename: 'pc-crm.html',
+    title: '预发服务',
   }
-};
+}
 ```
 
 - vue.config.js
@@ -799,22 +796,18 @@ const glob = require("glob");
 const pagesInfo = require("./pages.config");
 const pages = {};
 
-glob.sync("./src/**/main.js").forEach(p => {
-  let result = p.match(/\.\/src\/(.*)\/main\.js/);
-  result = result ? result[1] : "";
-  const key = result ? result : "main";
-  if (pagesInfo[key]) {
-    pages[key] = {
-      entry: result ? `src/${result}/main.js` : "src/main.js"
-    };
-    for (const info in pagesInfo[key]) {
-      pages[key] = {
-        ...pages[key],
-        [info]: pagesInfo[key][info]
-      };
+glob.sync('./src/pages/**/main.js').forEach(entry => {
+  let chunk = entry.match(/\.\/src\/pages\/(.*)\/main\.js/)[1];
+  const curr = pagesInfo[chunk];
+  if (curr) {
+    pages[chunk] = {
+      entry,
+      ...curr,
+      chunk: ["chunk-vendors", "chunk-common", chunk]
     }
   }
-});
+})
+
 module.exports = {
   chainWebpack: config => {
     // 防止多页面打包卡顿
@@ -837,19 +830,14 @@ const glob = require("glob");
 const pagesInfo = require("./pages.config");
 const pages = {};
 
-glob.sync("./src/**/main.js").forEach(p => {
-  let result = p.match(/\.\/src\/(.*)\/main\.js/);
-  result = result ? result[1] : "";
-  const key = result ? result : "main";
-  if (pagesInfo[key]) {
-    pages[key] = {
-      entry: result ? `src/${result}/main.js` : "src/main.js"
-    };
-    for (const info in pagesInfo[key]) {
-      pages[key] = {
-        ...pages[key],
-        [info]: pagesInfo[key][info]
-      };
+glob.sync('./src/pages/**/main.js').forEach(entry => {
+  let chunk = entry.match(/\.\/src\/pages\/(.*)\/main\.js/)[1];
+  const curr = pagesInfo[chunk];
+  if (curr) {
+    pages[chunk] = {
+      entry,
+      ...curr,
+      chunk: ["chunk-vendors", "chunk-common", chunk]
     }
   }
 });
@@ -883,7 +871,6 @@ module.exports = {
 
     // 多页面cdn添加
     Object.keys(pagesInfo).forEach(page => {
-      console.log(page);
       config.plugin(`html-${page}`).tap(args => {
         // html中添加cdn
         args[0].cdn = cdn;
@@ -1412,19 +1399,14 @@ const glob = require('glob')
 const pagesInfo = require('./pages.config')
 const pages = {}
 
-glob.sync('./src/**/main.js').forEach(p => {
-  let result = p.match(/\.\/src\/(.*)\/main\.js/)
-  result = result ? result[1] : '';
-  const key = result ? result : 'main';
-  if (pagesInfo[key]) {
-    pages[key] = {
-      entry: result ? `src/${result}/main.js` : 'src/main.js'
-    }
-    for (const info in pagesInfo[key]) {
-      pages[key] = {
-        ...pages[key],
-        [info]: pagesInfo[key][info]
-      }
+glob.sync('./src/pages/**/main.js').forEach(entry => {
+  let chunk = entry.match(/\.\/src\/pages\/(.*)\/main\.js/)[1];
+  const curr = pagesInfo[chunk];
+  if (curr) {
+    pages[chunk] = {
+      entry,
+      ...curr,
+      chunk: ["chunk-vendors", "chunk-common", chunk]
     }
   }
 })
@@ -1541,6 +1523,9 @@ module.exports = {
   chainWebpack: config => {
     // 修复HMR
     config.resolve.symlinks(true);
+
+    // config.plugins.delete('preload');
+    // config.plugins.delete('prefetch');
 
     config
       .plugin("ignore")
