@@ -176,29 +176,29 @@ module.exports = {
     };
 
     // 如果使用多页面打包，使用vue inspect --plugins查看html是否在结果数组中
-    // config.plugin("html").tap(args => {
-    //   // html中添加cdn
-    //   args[0].cdn = cdn;
+    config.plugin("html").tap(args => {
+      // html中添加cdn
+      args[0].cdn = cdn;
 
-    //   // 修复 Lazy loading routes Error
-    //   args[0].chunksSortMode = "none";
-    //   return args;
-    // });
+      // 修复 Lazy loading routes Error
+      args[0].chunksSortMode = "none";
+      return args;
+    });
 
     // 防止多页面打包卡顿
-    config => config.plugins.delete('named-chunks')
+    // config => config.plugins.delete('named-chunks')
 
     // 多页面cdn添加
-    Object.keys(pagesInfo).forEach(page => {
-      config.plugin(`html-${page}`).tap(args => {
-        // html中添加cdn
-        args[0].cdn = cdn;
+    // Object.keys(pagesInfo).forEach(page => {
+    //   config.plugin(`html-${page}`).tap(args => {
+    //     // html中添加cdn
+    //     args[0].cdn = cdn;
 
-        // 修复 Lazy loading routes Error
-        args[0].chunksSortMode = "none";
-        return args;
-      });
-    })
+    //     // 修复 Lazy loading routes Error
+    //     args[0].chunksSortMode = "none";
+    //     return args;
+    //   });
+    // })
 
     if (IS_PROD) {
       // 压缩图片
@@ -240,7 +240,7 @@ module.exports = {
 
     return config;
   },
-  pages,
+  // pages,
   css: {
     extract: IS_PROD,
     sourceMap: false,
