@@ -32,6 +32,7 @@
 - [√ 去掉 console.log](#log)
 - [√ 利用 splitChunks 单独打包第三方模块](#splitchunks)
 - [√ 开启 gzip 压缩](#gzip)
+- [√ 开启 stylelint 检测scss, css语法](#stylelint)
 - [√ 为 sass 提供全局样式，以及全局变量](#globalscss)
 - [√ 为 stylus 提供全局变量](#globalstylus)
 - [√ 预渲染 prerender-spa-plugin](#prerender)
@@ -1102,6 +1103,49 @@ module.exports = {
 };
 ```
 
+[▲ 回顶部](#top)
+
+### <span id="stylelint">✅ 开启 stylelint 检测scss, css语法</span>
+```bash
+npm i -D stylelint stylelint-config-standard stylelint-config-prettier stylelint-webpack-plugin
+```
+
+在文件夹创建stylelint.config.js,详细配置在[这里](https://stylelint.io/user-guide/configuration)
+```javascript
+module.exports = {
+  ignoreFiles: ["**/*.js", "src/assets/css/element-variables.scss", "theme/"], 
+  extends: ["stylelint-config-standard", "stylelint-config-prettier"],
+  rules: {
+    "no-empty-source": null,
+    "at-rule-no-unknown": [
+      true,
+      {
+        ignoreAtRules: ["extend"]
+      }
+    ]
+  }
+};
+```
+启用webpack配置
+
+```javascript
+const StylelintPlugin = require("stylelint-webpack-plugin");
+
+module.exports = {
+  configureWebpack: config => {
+    const plugins = [];
+    if (IS_DEV) {
+      plugins.push(
+        new StylelintPlugin({
+          files: ["src/**/*.vue", "src/assets/**/*.scss"],
+          fix: true //打开自动修复（谨慎使用！注意上面的配置不要加入js或html文件，会发生问题，js文件请手动修复）
+        })
+      );
+    }
+    config.plugins = [...config.plugins, ...plugins];
+  }
+}
+```
 [▲ 回顶部](#top)
 
 ### <span id="globalscss">✅ 为 sass 提供全局样式，以及全局变量</span>
