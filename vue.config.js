@@ -2,11 +2,13 @@ const SpritesmithPlugin = require("webpack-spritesmith");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
 const webpack = require("webpack");
+const StylelintPlugin = require("stylelint-webpack-plugin");
 
 const path = require("path");
 const fs = require("fs");
 const resolve = dir => path.join(__dirname, dir);
 const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
+const IS_DEV = ["development"].includes(process.env.NODE_ENV);
 
 const glob = require('glob')
 const pagesInfo = require('./pages.config')
@@ -130,6 +132,19 @@ module.exports = {
       vuex: "Vuex",
       axios: "axios"
     };
+
+    if (IS_DEV) {
+      plugins.push(
+        new StylelintPlugin({
+          files: ["src/**/*.vue", "src/assets/**/*.scss"],
+          fix: true
+        })
+      );
+      // 关闭host check，方便使用ngrok之类的内网转发工具
+      config.devServer = {
+        disableHostCheck: true
+      };
+    }
 
     config.plugins = [...config.plugins, ...plugins];
   },
