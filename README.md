@@ -1365,15 +1365,11 @@ module.exports = {
 [▲ 回顶部](#top)
 
 ### <span id="ie">✅ 添加 IE 兼容</span>
-
-```bash
-npm i -S @babel/polyfill
-```
-
 &emsp;&emsp;在 main.js 中添加
 
 ```javascript
-import "@babel/polyfill";
+import 'core-js/stable'; 
+import 'regenerator-runtime/runtime';
 ```
 
 配置 babel.config.js
