@@ -1,7 +1,6 @@
 禁止私自转载。运营公众号、社交账号，请坚持原创。勿做知识剽窃者！
 
 # vue-cli4 全面配置(持续更新)
-
 &emsp;&emsp;细致全面的 vue-cli4 配置信息。涵盖了使用 vue-cli 开发过程中大部分配置需求。
 
 &emsp;&emsp;不建议直接拉取此项目作为模板，希望能按照此教程按需配置，或者复制 vue.config.js 增删配置,并自行安装所需依赖。
@@ -9,7 +8,6 @@
 &emsp;&emsp;vue-cli3 配置见 [vue-cli3 分支](https://github.com/staven630/vue-cli4-config/tree/vue-cli3)。
 
 ### 其他系列
-
 ★ [Blog](https://github.com/staven630/blog)
 
 ★ [Nuxt.js 全面配置](https://github.com/staven630/nuxt-config)
@@ -36,6 +34,7 @@
 - [√ 开启 gzip 压缩](#gzip)
 - [√ 开启 stylelint 检测scss, css语法](#stylelint)
 - [√ 为 sass 提供全局样式，以及全局变量](#globalscss)
+- [√ 为 less 提供全局样式，以及全局变量](#globalless)
 - [√ 为 stylus 提供全局变量](#globalstylus)
 - [√ 预渲染 prerender-spa-plugin](#prerender)
 - [√ 添加 IE 兼容](#ie)
@@ -815,7 +814,6 @@ module.exports = {
   chainWebpack: config => {
     // 防止多页面打包卡顿
     config => config.plugins.delete("named-chunks");
-
     return config;
   },
   pages
@@ -1189,6 +1187,49 @@ module.exports = {
 
 [▲ 回顶部](#top)
 
+### <span id="globalless">✅ 为 less 提供全局样式，以及全局变量</span>
+> npm i -D less less-loader
+
+&emsp;&emsp;在src/assets/less目录下新建variables.less文件，并定义全局less变量
+```less
+@primary-color: #1890ff;
+@normal-color: #d9d9d9;
+@text-color: #303753;
+```
+&emsp;&emsp;vue.config.js中为其添加相应less配置。
+```js
+const path = require('path')
+const fs = require('fs')
+const postcss = require('postcss')
+const resolve = dir => path.resolve(__dirname, dir)
+
+const IS_PROD = ['prod', 'production'].includes(process.env.NODE_ENV)
+
+function getLessVaribles(fileUrl, list = {}) {
+  if (!fs.existsSync(fileUrl)) return {};
+  let lessFile = fs.readFileSync(fileUrl, 'utf8');
+  return postcss.parse(lessFile).nodes.reduce((acc, curr) => {
+    acc[`${curr.name.replace(/\:/, '')}`] = `${curr.params}`;
+    return acc;
+  }, list);
+}
+
+const modifyVars = getLessVaribles(resolve('./src/assets/less/variables.less'));
+
+module.exports = {
+  css: {
+    extract: IS_PROD,
+    // sourceMap: false,
+    loaderOptions: {
+      less: {
+        modifyVars,
+        javascriptEnabled: true,
+      }
+    }
+  }
+}
+```
+
 ### <span id="globalstylus">✅ 为 stylus 提供全局变量</span>
 
 ```bash
@@ -1219,7 +1260,6 @@ module.exports = {
 [▲ 回顶部](#top)
 
 ### <span id="prerender">预渲染 prerender-spa-plugin</span>
-
 ```bash
 npm i -D prerender-spa-plugin
 ```
