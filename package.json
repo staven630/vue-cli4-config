@@ -44,7 +44,7 @@
     "sass-loader": "^8.0.0",
     "spritesheet-templates": "^10.4.2",
     "spritesmith": "^3.4.0",
-    "standard-version": "^7.0.0",
+    "standard-version": "^8.0.1",
     "stylelint": "^13.0.0",
     "stylelint-config-prettier": "^8.0.1",
     "stylelint-config-standard": "^19.0.0",
