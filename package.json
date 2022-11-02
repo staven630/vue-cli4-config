@@ -50,7 +50,7 @@
     "stylelint-config-standard": "^19.0.0",
     "stylelint-webpack-plugin": "^1.2.1",
     "svg-sprite-loader": "^4.1.6",
-    "svgtofont": "^1.5.1",
+    "svgtofont": "^3.19.0",
     "vue-template-compiler": "^2.6.10",
     "webpack-spritesmith": "^1.0.2"
   },
