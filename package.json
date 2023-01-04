@@ -27,7 +27,7 @@
     "@vue/cli-plugin-babel": "^4.0.0",
     "@vue/cli-plugin-router": "^4.0.0",
     "@vue/cli-plugin-vuex": "^4.0.0",
-    "@vue/cli-service": "^4.0.0",
+    "@vue/cli-service": "^5.0.8",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "commitizen": "^4.0.3",
     "commitlint-config-cz": "^0.12.1",
@@ -49,7 +49,7 @@
     "stylelint-config-prettier": "^8.0.1",
     "stylelint-config-standard": "^19.0.0",
     "stylelint-webpack-plugin": "^1.2.1",
-    "svg-sprite-loader": "^4.1.6",
+    "svg-sprite-loader": "^6.0.11",
     "svgtofont": "^1.5.1",
     "vue-template-compiler": "^2.6.10",
     "webpack-spritesmith": "^1.0.2"
